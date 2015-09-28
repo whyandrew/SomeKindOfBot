@@ -1,0 +1,516 @@
+#SYMBOLS
+Index	Identifier	Type	Flag	Data	Size	RefCount
+0	__signed_stack_002move_robot	6	1	0	4	6
+1	__signed_stack_003move_robot	6	1	4	4	4
+2	__signed_stack_001confirmColor	6	1	8	4	4
+3	__signed_stack_001move_robot	6	1	12	4	10
+4	__signed_stack_004move_robot	6	1	16	4	2
+5	__signed_stack_001turnRight90_inline_move_robot	6	1	20	4	4
+6	__rotate_theAngle4	5	1	24	4	2
+7	__signed_stack_001readColor	6	1	28	4	2
+8	__signed_stack_001forwardFullSpeed_inline_move_robot	6	1	32	4	6
+9	__D0confirmColor	6	1	36	4	6
+10	__DU0confirmColor	5	1	40	4	2
+11	__SPTArgsMutex	9	0	44	4	2
+12	__Wait_7qG2_ms_7qG2_000_inline_move_robot	5	1	48	4	6
+13	__D0move_robot	6	1	52	4	12
+14	__D0forwardFullSpeed_inline_move_robot	6	1	56	4	6
+15	__D0turnRight90_inline_move_robot	6	1	60	4	4
+16	__DU0move_robot	5	1	64	4	2
+17	__D0readColor	6	1	68	4	7
+18	__signed_stack_002turnRight90_inline_move_robot	6	1	72	4	4
+19	__signed_stack_003turnRight90_inline_move_robot	6	1	76	4	4
+20	__signed_stack_004turnRight90_inline_move_robot	6	1	80	4	4
+21	__Wait_7qG2_ms_7qG2_000_inline_main	5	1	84	4	2
+22	__rotate_angle4	6	1	88	4	7
+23	__readColor_7qG2_sum_7qG2_000	4	1	92	2	4
+24	__readColor_7qG2_counts_7qG2_000	4	1	94	2	3
+25	__move_robot_7qG2_colorOutput_7qG2_000	4	1	96	2	4
+26	__readColor_7qG2_i_7qG2_001	4	1	98	2	4
+27	__rotate_OldRotCount4	4	1	100	2	2
+28	__confirmColor_7qG2_colorDefine_7qG2_000	4	1	102	2	2
+29	__confirmColor_7qG2_readCounts_7qG2_000	4	1	104	2	4
+30	__rotate_RotCount4	4	1	106	2	4
+31	__zfconfirmColor	1	1	108	1	6
+32	__constVal63	2	0	109	1	4
+33	__constVal96	2	0	110	1	7
+34	__zfreadColor	1	1	111	1	3
+35	__confirmColor_7qG2_ret_7qG2_000	1	1	112	1	3
+36	__readColor_return	1	1	113	1	4
+37	__move_robot_return	1	1	114	1	3
+38	__zfmove_robot	1	1	115	1	7
+39	__confirmColor_return	1	1	116	1	4
+40	__rotate_theRVP4	1	1	117	1	4
+41	__rotate_theRVI4	1	1	118	1	4
+42	__rotate_theRM4	1	1	119	1	4
+43	__rotate_theRS4	1	1	120	1	3
+44	__rotate_thePower4	2	1	121	1	4
+45	__rotate_theTurnPct4	2	1	122	1	4
+46	__rotate_theRVD4	1	1	123	1	4
+47	__rotate_rs4	1	1	124	1	2
+48	__rotate_firstPort4	1	1	125	1	5
+49	__rotate_sync4	1	1	126	1	4
+50	__rotate_power4	1	1	127	1	6
+51	__SetSensorColorFull_7qG2_port_7qG2_000_inline_main	1	1	128	1	4
+52	__rotate_theUF4	1	1	129	1	6
+53	__rotate_theOM4	1	1	130	1	7
+54	__rotate_stop4	1	1	131	1	4
+55	__rotate_turnpct4	2	1	132	1	5
+56	__constVal32	2	0	133	1	18
+57	__constVal2	2	0	134	1	3
+58	__constVal13	2	0	135	1	1
+59	____ResetSensorSubroutine_return	1	1	136	1	3
+60	____initialize_global_data_return	1	1	137	1	3
+61	__PFTmp	1	1	138	1	1
+62	__constVal7	2	0	139	1	3
+63	__constVal100	2	0	140	1	1
+64	__constValNeg100	2	0	141	1	2
+65	__constVal50	2	0	142	1	1
+66	____RotateMotor4_return	1	1	143	1	5
+67	__constVal1	2	0	144	1	6
+68	__constVal0	2	1	145	1	16
+69	__ResetSensorPort	1	1	146	1	3
+70	__ResetSensorTmp	1	1	147	1	2
+71	____RotateMotor4_sign_tmp	2	1	148	1	4
+72	__constVal3	2	0	149	1	1
+73	__TextOutArgs	8	0	4	16	5
+74	__TextOutArgs.Result	2	1	152	1	5
+75	__TextOutArgs.Location	8	0	2	4	5
+76	__TextOutArgs.Location.X	4	1	156	2	5
+77	__TextOutArgs.Location.Y	4	1	158	2	5
+78	__TextOutArgs.Text	7	0	160	4	5
+79	__TextOutArgs.Text.Text_type	1	0	0	1	0
+80	__TextOutArgs.Options	5	1	164	4	5
+81	__SPTArgs	8	0	5	8	6
+82	__SPTArgs.Result	2	1	168	1	6
+83	__SPTArgs.Frequency	3	1	170	2	6
+84	__SPTArgs.Duration	3	1	172	2	6
+85	__SPTArgs.Loop	1	1	174	1	6
+86	__SPTArgs.Volume	1	1	175	1	6
+87	__OUT_AC	7	0	176	4	7
+88	__OUT_AC.__OUT_AC_type	1	0	0	1	0
+89	__rotate_ports4	7	0	178	4	8
+90	__rotate_ports4.__rotate_ports4_type	1	0	0	1	0
+#SOURCES
+Clump	Line	PC	Source
+0	214	0	#line 214 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+0	215	0		subcall __initialize_global_data, ____initialize_global_data_return
+0	214	2	#line 214 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+0	214	2	#line 214 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+0	215	2		set __SetSensorColorFull_7qG2_port_7qG2_000_inline_main, 0
+0	214	5	#line 214 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+0	3802	5	#line 3802 "NXCDefs.h"
+0	3803	5	#pragma macro 6
+0	3803	5		setin __constVal13, __SetSensorColorFull_7qG2_port_7qG2_000_inline_main, 0
+0	3803	9		setin __constVal0, __SetSensorColorFull_7qG2_port_7qG2_000_inline_main, 1
+0	3803	13		mov __ResetSensorPort, __SetSensorColorFull_7qG2_port_7qG2_000_inline_main
+0	3803	15		subcall __ResetSensorSubroutine, ____ResetSensorSubroutine_return
+0	4672	17	#line 4672 "NXCDefs.h"
+0	3802	17	#line 3802 "NXCDefs.h"
+0	216	17	#line 216 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+0	227	17	#line 227 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+0	228	17		subcall move_robot, __move_robot_return
+0	227	19	#line 227 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+0	227	19	#line 227 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+0	228	19		set __Wait_7qG2_ms_7qG2_000_inline_main, 1000
+0	227	22	#line 227 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+0	7921	22	#line 7921 "NXCDefs.h"
+0	7922	22		wait2 NA, __Wait_7qG2_ms_7qG2_000_inline_main
+0	7921	25	#line 7921 "NXCDefs.h"
+0	230	25	#line 230 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+0	231	25		exit -1, -1
+1	4688	0		brtst 4, __rotate_Done4, __rotate_angle4
+1	4689	3		set ____RotateMotor4_sign_tmp, 0
+1	4689	6		brtst EQ, __sign_4, __rotate_angle4
+1	4689	9		set ____RotateMotor4_sign_tmp, -1
+1	4689	12		brtst LT, __sign_4, __rotate_angle4
+1	4689	15		set ____RotateMotor4_sign_tmp, 1
+1	4689	18	__sign_4:	mov __rotate_thePower4, ____RotateMotor4_sign_tmp
+1	4690	20		abs __rotate_theAngle4, __rotate_angle4
+1	4691	23		mul __rotate_thePower4, __rotate_thePower4, __rotate_power4
+1	4693	27		set __rotate_theUF4, 23
+1	4694	30		brtst 4, __rotate_NoSync4, __rotate_sync4
+1	4695	33		set __rotate_theOM4, 7
+1	4696	36		set __rotate_theRM4, 2
+1	4697	39		mov __rotate_theTurnPct4, __rotate_turnpct4
+1	4698	41		brtst 4, __rotate_Start4, __rotate_theTurnPct4
+1	4699	44		add __rotate_theUF4, __rotate_theUF4, __constVal32
+1	4700	48		jmp __rotate_Start4
+1	4702	50		set __rotate_theOM4, 3
+1	4703	53		set __rotate_theRM4, 0
+1	4704	56		set __rotate_theTurnPct4, 0
+1	4706	59		set __rotate_theRS4, 32
+1	4707	62		setout __rotate_ports4, 1, __rotate_theOM4, 8, __rotate_theRM4, 5, __rotate_theAngle4, 6, __rotate_theRS4, 10, __rotate_theRVP4, 11, __rotate_theRVI4, 12, __rotate_theRVD4, 2, __rotate_thePower4, 7, __rotate_turnpct4, 0, __rotate_theUF4
+1	4710	85		index __rotate_firstPort4, __rotate_ports4, 65535
+1	4712	89		getout __rotate_power4, __rotate_firstPort4, 2
+1	4713	93		brtst 4, __rotate_doneRunning4, __rotate_power4
+1	4714	96		getout __rotate_rs4, __rotate_firstPort4, 6
+1	4715	100		brcmp 4, __rotate_Running4, __rotate_rs4, __constVal32
+1	4717	104		brtst 4, __rotate_Reset4, __rotate_stop4
+1	4719	107		set __rotate_theOM4, 7
+1	4720	110		set __rotate_theUF4, 7
+1	4721	113		setout __rotate_ports4, 1, __rotate_theOM4, 8, __constVal1, 6, __rotate_theRS4, 2, __constVal0, 5, __constVal0, 0, __rotate_theUF4
+1	4723	128		getout __rotate_RotCount4, __rotate_firstPort4, 14
+1	4725	132		mov __rotate_OldRotCount4, __rotate_RotCount4
+1	4726	134		wait2 NA, __constVal50
+1	4728	137		getout __rotate_RotCount4, __rotate_firstPort4, 14
+1	4729	141		brcmp 5, __rotate_Stabilize4, __rotate_OldRotCount4, __rotate_RotCount4
+1	4730	145		set __rotate_theOM4, 4
+1	4731	148		setout __rotate_ports4, 8, __rotate_theRM4, 6, __constVal0, 1, __rotate_theOM4, 0, __constVal1
+1	4734	159		brtst 4, __rotate_Done4, __rotate_theTurnPct4
+1	4735	162		setout __rotate_ports4, 0, __constVal32
+1	4737	167		subret ____RotateMotor4_return
+2	4885	0		setin __constVal1, __ResetSensorPort, 5
+2	4887	4		getin __ResetSensorTmp, __ResetSensorPort, 5
+2	4888	8		brtst 5, __SensorStillInvalid, __ResetSensorTmp
+2	4889	11		subret ____ResetSensorSubroutine_return
+3	38	0	#line 38 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	39	0		set __confirmColor_7qG2_readCounts_7qG2_000, 50
+3	38	3	#line 38 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	40	3	#line 40 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	41	3		set __confirmColor_7qG2_ret_7qG2_000, 1
+3	40	6	#line 40 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	40	6	#line 40 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	41	6		mov __signed_stack_001confirmColor, __confirmColor_7qG2_readCounts_7qG2_000
+3	40	8	#line 40 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	40	8	#line 40 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	41	8		set __D0confirmColor, 0
+3	40	11	#line 40 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	41	11		cmp 1, __zfconfirmColor, __signed_stack_001confirmColor, __D0confirmColor
+3	40	15	#line 40 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	41	15		mov __D0confirmColor, __zfconfirmColor
+3	40	17	#line 40 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	41	17		brtst 4, __NXC_Label_494, __zfconfirmColor
+3	40	20	#line 40 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	41	20		jmp __NXC_Label_495
+3	41	22	#line 41 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	42	22		sub __confirmColor_7qG2_readCounts_7qG2_000, __confirmColor_7qG2_readCounts_7qG2_000, __constVal1
+3	42	26	#line 42 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	43	26		jmp __NXC_Label_493
+3	42	28	#line 42 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	43	28		mov __signed_stack_001confirmColor, __confirmColor_7qG2_colorDefine_7qG2_000
+3	42	30	#line 42 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	42	30	#line 42 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	43	30		getin __D0confirmColor, __constVal0, 4
+3	42	34	#line 42 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	43	34		cmp 5, __zfconfirmColor, __signed_stack_001confirmColor, __D0confirmColor
+3	42	38	#line 42 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	43	38		mov __D0confirmColor, __zfconfirmColor
+3	44	40	#line 44 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	45	40		brtst 4, __NXC_Label_501, __zfconfirmColor
+3	45	43	#line 45 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	46	43		set __confirmColor_7qG2_ret_7qG2_000, 0
+3	45	46	#line 45 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	45	46	#line 45 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	48	46	#line 48 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	48	46	#line 48 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	49	46		jmp __NXC_Label_496
+3	48	48	#line 48 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	49	48	#line 49 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	50	48		mov __DU0confirmColor, __confirmColor_7qG2_ret_7qG2_000
+3	49	50	#line 49 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	50	50		subret __confirmColor_return
+3	49	52	#line 49 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	55	52	#line 55 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+3	56	52		subret __confirmColor_return
+4	58	0	#line 58 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	59	0		set __readColor_7qG2_counts_7qG2_000, 10
+4	58	3	#line 58 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	59	3	#line 59 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	60	3		set __readColor_7qG2_sum_7qG2_000, 0
+4	59	6	#line 59 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	59	6	#line 59 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	60	6		set __readColor_7qG2_i_7qG2_001, 0
+4	59	9	#line 59 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	59	9	#line 59 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	60	9		mov __signed_stack_001readColor, __readColor_7qG2_i_7qG2_001
+4	59	11	#line 59 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	59	11	#line 59 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	60	11		mov __D0readColor, __readColor_7qG2_counts_7qG2_000
+4	59	13	#line 59 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	60	13		cmp 0, __zfreadColor, __signed_stack_001readColor, __D0readColor
+4	59	17	#line 59 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	60	17		mov __D0readColor, __zfreadColor
+4	59	19	#line 59 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	60	19		brtst 4, __NXC_Label_511, __zfreadColor
+4	59	22	#line 59 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	60	22		jmp __NXC_Label_512
+4	60	24	#line 60 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	61	24		add __readColor_7qG2_i_7qG2_001, __readColor_7qG2_i_7qG2_001, __constVal1
+4	61	28	#line 61 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	62	28		jmp __NXC_Label_510
+4	61	30	#line 61 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	62	30		getin __D0readColor, __constVal0, 4
+4	61	34	#line 61 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	62	34		add __readColor_7qG2_sum_7qG2_000, __readColor_7qG2_sum_7qG2_000, __D0readColor
+4	61	38	#line 61 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	61	38	#line 61 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	64	38	#line 64 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	65	38		jmp __NXC_Label_513
+4	64	40	#line 64 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	64	40	#line 64 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	64	40	#line 64 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	64	40	#line 64 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	64	40	#line 64 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	65	40		div __D0readColor, __readColor_7qG2_sum_7qG2_000, __readColor_7qG2_counts_7qG2_000
+4	65	44	#line 65 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	66	44		subret __readColor_return
+4	65	46	#line 65 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	67	46	#line 67 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+4	68	46		subret __readColor_return
+5	69	0	#line 69 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	70	0		set __signed_stack_001forwardFullSpeed_inline_move_robot, 30
+5	69	3	#line 69 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	69	3	#line 69 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	70	3		set __D0forwardFullSpeed_inline_move_robot, 0
+5	70	6	#line 70 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	71	6	#pragma macro 7
+5	71	6		setout __OUT_AC, 2, __signed_stack_001forwardFullSpeed_inline_move_robot, 1, __constVal7, 8, __constVal2, 7, __D0forwardFullSpeed_inline_move_robot, 6, __constVal32, 5, __constVal0, 10, __constVal96, 11, __constVal32, 12, __constVal32, 0, __constVal63
+5	4344	29	#line 4344 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	70	29	#line 70 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	126	29	#line 126 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	127	29	#line 127 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	128	29		set __D0move_robot, 1
+5	128	32	#line 128 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	129	32		tst 5, __zfmove_robot, __D0move_robot
+5	128	35	#line 128 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	129	35		brtst 4, __NXC_Label_587, __zfmove_robot
+5	129	38	#line 129 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	130	38		subcall readColor, __readColor_return
+5	129	40	#line 129 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	130	40		mov __move_robot_7qG2_colorOutput_7qG2_000, __D0readColor
+5	129	42	#line 129 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	129	42	#line 129 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	129	42	#line 129 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	130	42		set __signed_stack_001move_robot, 0
+5	129	45	#line 129 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	129	45	#line 129 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	130	45		set __signed_stack_002move_robot, 48
+5	129	48	#line 129 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	129	48	#line 129 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	130	48		mov __D0move_robot, __move_robot_7qG2_colorOutput_7qG2_000
+5	132	50	#line 132 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	132	50	#line 132 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	133	50		mov __TextOutArgs.Location.X, __signed_stack_001move_robot
+5	132	52	#line 132 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	133	52		mov __TextOutArgs.Location.Y, __signed_stack_002move_robot
+5	132	54	#line 132 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	133	54		set __TextOutArgs.Options, 0
+5	132	57	#line 132 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	133	57		numtostr __TextOutArgs.Text, __D0move_robot
+5	132	60	#line 132 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	133	60		syscall 13, __TextOutArgs
+5	132	63	#line 132 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	132	63	#line 132 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	132	63	#line 132 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	132	63	#line 132 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	133	63		set __signed_stack_001move_robot, 5
+5	132	66	#line 132 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	133	66	#line 133 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	134	66		mov __D0move_robot, __move_robot_7qG2_colorOutput_7qG2_000
+5	133	68	#line 133 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	134	68		cmp 4, __zfmove_robot, __signed_stack_001move_robot, __D0move_robot
+5	133	72	#line 133 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	134	72		mov __D0move_robot, __zfmove_robot
+5	134	74	#line 134 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	135	74		brtst 4, __NXC_Label_600, __zfmove_robot
+5	135	77	#line 135 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	136	77	#pragma macro 7
+5	136	77		setout __OUT_AC, 2, __constVal0, 1, __constVal3, 8, __constVal0, 6, __constVal32, 7, __constVal0, 5, __constVal0, 10, __constVal96, 11, __constVal32, 12, __constVal32, 0, __constVal63
+5	4413	100	#line 4413 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	135	100	#line 135 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	135	100	#line 135 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	136	100		set __confirmColor_7qG2_colorDefine_7qG2_000, 5
+5	135	103	#line 135 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	136	103	#line 136 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	137	103		subcall confirmColor, __confirmColor_return
+5	136	105	#line 136 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	137	105		mov __DU0move_robot, __DU0confirmColor
+5	137	107	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	138	107		tst 5, __zfmove_robot, __DU0move_robot
+5	137	110	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	138	110		brtst 4, __NXC_Label_605, __zfmove_robot
+5	137	113	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	137	113	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	137	113	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	137	113	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	138	113		add __signed_stack_001move_robot, __move_robot_7qG2_colorOutput_7qG2_000, __constVal1
+5	137	117	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	137	117	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	137	117	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	138	117		mul __signed_stack_001move_robot, __signed_stack_001move_robot, __constVal100
+5	137	121	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	137	121	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	138	121		set __signed_stack_002move_robot, 400
+5	137	124	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	137	124	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	138	124		set __signed_stack_003move_robot, 1
+5	137	127	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	137	127	#line 137 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	138	127		set __D0move_robot, 0
+5	139	130	#line 139 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	140	130		acquire __SPTArgsMutex
+5	139	131	#line 139 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	140	131		mov __SPTArgs.Frequency, __signed_stack_001move_robot
+5	139	133	#line 139 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	140	133		mov __SPTArgs.Duration, __signed_stack_002move_robot
+5	139	135	#line 139 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	140	135		mov __SPTArgs.Volume, __signed_stack_003move_robot
+5	139	137	#line 139 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	140	137		mov __SPTArgs.Loop, __D0move_robot
+5	139	139	#line 139 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	140	139		syscall 10, __SPTArgs
+5	139	142	#line 139 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	140	142		mov __D0move_robot, __SPTArgs.Result
+5	139	144	#line 139 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	140	144		release __SPTArgsMutex
+5	139	145	#line 139 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	99	145	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	100	145		set __signed_stack_001turnRight90_inline_move_robot, 20
+5	99	148	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	99	148	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	100	148		set __signed_stack_002turnRight90_inline_move_robot, 300
+5	99	151	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	99	151	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	100	151		mov __signed_stack_003turnRight90_inline_move_robot, __constValNeg100
+5	99	153	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	99	153	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	100	153		set __signed_stack_004turnRight90_inline_move_robot, 1
+5	99	156	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	99	156	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	100	156		set __D0turnRight90_inline_move_robot, 1
+5	100	159	#line 100 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	101	159	#pragma macro 35
+5	101	159		mov __rotate_ports4, __OUT_AC
+5	101	161		mov __rotate_power4, __signed_stack_001turnRight90_inline_move_robot
+5	101	163		mov __rotate_angle4, __signed_stack_002turnRight90_inline_move_robot
+5	101	165		mov __rotate_turnpct4, __signed_stack_003turnRight90_inline_move_robot
+5	101	167		mov __rotate_sync4, __signed_stack_004turnRight90_inline_move_robot
+5	101	169		mov __rotate_stop4, __D0turnRight90_inline_move_robot
+5	101	171		mov __rotate_theRVP4, __constVal32
+5	101	173		mov __rotate_theRVI4, __constVal0
+5	101	175		mov __rotate_theRVD4, __constVal96
+5	101	177		subcall __RotateMotor4, ____RotateMotor4_return
+5	4513	179	#line 4513 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	100	179	#line 100 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	140	179	#line 140 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	99	179	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	100	179		set __signed_stack_001turnRight90_inline_move_robot, 20
+5	99	182	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	99	182	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	100	182		set __signed_stack_002turnRight90_inline_move_robot, 300
+5	99	185	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	99	185	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	100	185		mov __signed_stack_003turnRight90_inline_move_robot, __constValNeg100
+5	99	187	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	99	187	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	100	187		set __signed_stack_004turnRight90_inline_move_robot, 1
+5	99	190	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	99	190	#line 99 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	100	190		set __D0turnRight90_inline_move_robot, 1
+5	100	193	#line 100 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	101	193	#pragma macro 35
+5	101	193		mov __rotate_ports4, __OUT_AC
+5	101	195		mov __rotate_power4, __signed_stack_001turnRight90_inline_move_robot
+5	101	197		mov __rotate_angle4, __signed_stack_002turnRight90_inline_move_robot
+5	101	199		mov __rotate_turnpct4, __signed_stack_003turnRight90_inline_move_robot
+5	101	201		mov __rotate_sync4, __signed_stack_004turnRight90_inline_move_robot
+5	101	203		mov __rotate_stop4, __D0turnRight90_inline_move_robot
+5	101	205		mov __rotate_theRVP4, __constVal32
+5	101	207		mov __rotate_theRVI4, __constVal0
+5	101	209		mov __rotate_theRVD4, __constVal96
+5	101	211		subcall __RotateMotor4, ____RotateMotor4_return
+5	4545	213	#line 4545 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	100	213	#line 100 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	141	213	#line 141 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	141	213	#line 141 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	142	213		set __Wait_7qG2_ms_7qG2_000_inline_move_robot, 500
+5	141	216	#line 141 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	7921	216	#line 7921 "NXCDefs.h"
+5	7922	216		wait2 NA, __Wait_7qG2_ms_7qG2_000_inline_move_robot
+5	7921	219	#line 7921 "NXCDefs.h"
+5	142	219	#line 142 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	142	219	#line 142 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	143	219		set __signed_stack_001move_robot, 20
+5	142	222	#line 142 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	142	222	#line 142 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	143	222		set __signed_stack_002move_robot, 50
+5	142	225	#line 142 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	142	225	#line 142 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	143	225		set __signed_stack_003move_robot, 0
+5	142	228	#line 142 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	142	228	#line 142 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	143	228		set __signed_stack_004move_robot, 1
+5	142	231	#line 142 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	142	231	#line 142 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	143	231		set __D0move_robot, 1
+5	143	234	#line 143 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	144	234	#pragma macro 35
+5	144	234		mov __rotate_ports4, __OUT_AC
+5	144	236		mov __rotate_power4, __signed_stack_001move_robot
+5	144	238		mov __rotate_angle4, __signed_stack_002move_robot
+5	144	240		mov __rotate_turnpct4, __signed_stack_003move_robot
+5	144	242		mov __rotate_sync4, __signed_stack_004move_robot
+5	144	244		mov __rotate_stop4, __D0move_robot
+5	144	246		mov __rotate_theRVP4, __constVal32
+5	144	248		mov __rotate_theRVI4, __constVal0
+5	144	250		mov __rotate_theRVD4, __constVal96
+5	144	252		subcall __RotateMotor4, ____RotateMotor4_return
+5	4591	254	#line 4591 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	143	254	#line 143 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	143	254	#line 143 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	144	254		set __Wait_7qG2_ms_7qG2_000_inline_move_robot, 500
+5	143	257	#line 143 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	7921	257	#line 7921 "NXCDefs.h"
+5	7922	257		wait2 NA, __Wait_7qG2_ms_7qG2_000_inline_move_robot
+5	7921	260	#line 7921 "NXCDefs.h"
+5	144	260	#line 144 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	69	260	#line 69 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	70	260		set __signed_stack_001forwardFullSpeed_inline_move_robot, 30
+5	69	263	#line 69 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	69	263	#line 69 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	70	263		set __D0forwardFullSpeed_inline_move_robot, 0
+5	70	266	#line 70 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	71	266	#pragma macro 7
+5	71	266		setout __OUT_AC, 2, __signed_stack_001forwardFullSpeed_inline_move_robot, 1, __constVal7, 8, __constVal2, 7, __D0forwardFullSpeed_inline_move_robot, 6, __constVal32, 5, __constVal0, 10, __constVal96, 11, __constVal32, 12, __constVal32, 0, __constVal63
+5	4614	289	#line 4614 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	70	289	#line 70 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	145	289	#line 145 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	148	289	#line 148 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	149	289		jmp __NXC_Label_630
+5	69	291	#line 69 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	70	291		set __signed_stack_001forwardFullSpeed_inline_move_robot, 30
+5	69	294	#line 69 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	69	294	#line 69 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	70	294		set __D0forwardFullSpeed_inline_move_robot, 0
+5	70	297	#line 70 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	71	297	#pragma macro 7
+5	71	297		setout __OUT_AC, 2, __signed_stack_001forwardFullSpeed_inline_move_robot, 1, __constVal7, 8, __constVal2, 7, __D0forwardFullSpeed_inline_move_robot, 6, __constVal32, 5, __constVal0, 10, __constVal96, 11, __constVal32, 12, __constVal32, 0, __constVal63
+5	4631	320	#line 4631 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	70	320	#line 70 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	149	320	#line 149 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	186	320	#line 186 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	186	320	#line 186 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	186	320	#line 186 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	187	320		set __Wait_7qG2_ms_7qG2_000_inline_move_robot, 50
+5	186	323	#line 186 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	7921	323	#line 7921 "NXCDefs.h"
+5	7922	323		wait2 NA, __Wait_7qG2_ms_7qG2_000_inline_move_robot
+5	7921	326	#line 7921 "NXCDefs.h"
+5	187	326	#line 187 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	213	326	#line 213 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	214	326		jmp __NXC_Label_586
+5	213	328	#line 213 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	213	328	#line 213 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+5	214	328		subret __move_robot_return
+6	233	0	#line 233 "C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc"
+6	234	0		subret ____initialize_global_data_return
+#CLUMPS
+Clump	Name	Offset	File
+0	main	0	C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc
+1	__RotateMotor4	28	NXTDefs.h
+2	__ResetSensorSubroutine	197	NXTDefs.h
+3	confirmColor	210	C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc
+4	readColor	264	C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc
+5	move_robot	312	C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc
+6	__initialize_global_data	642	C:\Users\Andrew\Documents\GitHub\SomeKindOfBot\Proj1\test_andrew.nxc

@@ -1,0 +1,17 @@
+int color;
+#define COLORSENSOR SENSOR_1
+task main() {
+     SetSensorColorFull(IN_1);
+     int prev = 0;
+     for(int i=1; i<50; i++)
+     {
+         NumOut(0, LCD_LINE1, prev);
+         NumOut(0, LCD_LINE2, COLORSENSOR);
+         RotateMotorEx(OUT_AC, 30, -15, 0, true, true);
+         if (prev != COLORSENSOR) {
+             PlayToneEx((COLORSENSOR + 1) * 100,400,1,FALSE);
+         }
+         prev = COLORSENSOR;
+     }
+}
+

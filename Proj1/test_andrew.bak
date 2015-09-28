@@ -1,0 +1,232 @@
+int color;
+#define COLORSENSOR SENSOR_1
+
+
+#define BLACK   1
+#define WHITE   6
+#define BLUE    2
+#define GREEN   3
+#define YELLOW  4
+#define RED     5
+
+#define MOTORS OUT_AC
+#define LEFTMOTOR OUT_C 
+#define RIGHTMOTOR OUT_A 
+
+mutex motorMutex; // All motor movement changes use this mutex
+#define FULLSPEED 30
+#define SLOWSPEED 15
+
+// Amount of wheel degree rotation to get 45/90/180 degree turn
+#define DEGREE45    150
+#define DEGREE90    300
+#define DEGREE180   600
+
+
+/* function prototypes, to be added if needed
+*/
+
+
+/* 
+    Take a few more readings
+    Return true if all readings are the same as input colorDefine, else false
+*/
+bool confirmColor(int colorDefine)
+{
+    // TODO: need to use some stats model? Or 9/10 is ok?
+
+    int readCounts = 50;
+    bool ret = true;
+
+    for (; readCounts > 0; readCounts--)
+    {
+        if (colorDefine != COLORSENSOR)
+        {
+            ret = false;
+        }
+    }
+
+    return ret;
+}
+
+/*
+    Take Color sensor reading 
+    Return int-average of 5 readings
+*/
+int readColor()
+{
+    int counts = 10;
+    int sum = 0;
+    for (int i = 0; i < counts; i++)
+    {
+        sum += COLORSENSOR;
+    }
+
+    return (sum / counts);
+}
+
+inline void forwardFullSpeed() 
+{
+    OnFwdSync(MOTORS, FULLSPEED, 0);
+}
+
+inline void forwardSlowMo()
+{
+    OnFwdSync(MOTORS, SLOWSPEED, 0);
+}
+
+inline void reverse()
+{
+    OnRevSync(MOTORS, SLOWSPEED, 0);
+}
+
+inline void turnLeft45()
+{
+    RotateMotorEx(OUT_AC, SLOWSPEED, DEGREE45, 100, true, true);
+}
+
+inline void turnRight45()
+{
+    RotateMotorEx(OUT_AC, SLOWSPEED, DEGREE45, -100, true, true);
+}
+
+inline void turnLeft90()
+{
+    RotateMotorEx(OUT_AC, SLOWSPEED, DEGREE90, 100, true, true);
+}
+
+inline void turnRight90()
+{
+    RotateMotorEx(OUT_AC, SLOWSPEED, DEGREE90, -100, true, true);
+}
+
+inline void turn180()
+{
+    RotateMotorEx(OUT_AC, SLOWSPEED, DEGREE180, -100, true, true);
+}
+
+/* Subroutine which moves the robot forward from one intersection to the next
+*/
+sub move_robot(){
+    ////////////////////////////////////////////////////////////////////////////
+    //  TO DO:
+    //
+    //  Complete this subroutine.
+    //  Your robot will need to nagivates its way from one interesection to the
+    //  next. If it reaches a red boundary, it will do a 180 degree turn and
+    //  return to the previous intersection facing in the opposite direction.
+    //
+    //  You may need to account for motor "noise" as your robot will not always
+    //  make turns perfectly and go straight forward each time.
+    //
+    ////////////////////////////////////////////////////////////////////////////
+
+    int colorOutput;
+    forwardFullSpeed();    
+
+    while (true)
+    {
+        colorOutput = readColor();
+        NumOut(0, LCD_LINE2, colorOutput);
+
+
+        if (RED == colorOutput) // Hit red wall, do 180 turn
+        {
+            Off(MOTORS);
+            if (confirmColor(RED))
+            {
+                PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
+                //isOnBlack = false;
+                turnRight90();
+                turnRight90();
+                Wait(500);
+                RotateMotorEx(MOTORS, SLOWSPEED, 50, 0, true, true);
+                Wait(500);
+                forwardFullSpeed();
+            }
+            else 
+            {
+                forwardFullSpeed();
+            }
+        }
+        /*
+        else if (YELLOW == colorOutput) // yellow is intersection
+        {
+            Off(MOTORS);  
+            if (confirmColor(YELLOW))
+            {
+                PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
+                // TODO, scan_surroundings() if during localization; turn if moving to destination
+                forwardFullSpeed();
+
+                Wait(300); // remove later
+            }
+            else
+            {
+                forwardFullSpeed();
+            }
+        }
+        else if (BLACK != colorOutput) // moving out of black road, get back.
+        {
+            Off(MOTORS);  
+            if (confirmColor(colorOutput))
+            {
+                PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
+                // TODO, get back on black road...
+                forwardFullSpeed();
+
+                Wait(300); // remove later
+            }
+            else
+            {
+                forwardFullSpeed();
+            }
+
+        }
+        */
+        Wait(50);
+    }
+}
+
+/* This function scans the surroundings of the robot.
+   It takes readings of the colour of the 4 squares surrounding the
+   intersection and returns an intersection variable which holds the data.
+*/
+// intersection scan_surroundings(){
+//     intersection rsense;
+//     ////////////////////////////////////////////////////////////////////////////
+//     // TO DO:
+//     //
+//     // Implement a function in which the robot will scan the colour of the
+//     // surrounding squares at an interesection.
+//     // It will use the colour sensor to take readings from all four squares
+//     // in each of the NE, SE, SW, NW directions relative to the forward facing
+//     // direction of the robot.
+//     //
+//     ////////////////////////////////////////////////////////////////////////////
+
+//     return rsense;
+// }
+
+
+
+
+task main() {
+    SetSensorColorFull(IN_1);
+
+    move_robot();
+
+
+    //forwardFullSpeed();
+    
+    // turnLeft90();
+    // Wait(1000);
+    // turnRight90();
+
+
+
+    Wait(1000);
+
+
+}
+
