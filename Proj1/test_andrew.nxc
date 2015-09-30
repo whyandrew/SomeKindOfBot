@@ -22,6 +22,21 @@ mutex motorMutex; // All motor movement changes use this mutex
 #define DEGREE90    300
 #define DEGREE180   600
 
+/* Represents an interesection (yellow square) on the grid.
+
+   Holds data on the surroundings of the intersection, namely coloured(or white)
+   squares to the NE, SE, SW, NW of the interesection.
+   
+   Note that the directions are by default in terms of compass directions.
+   When given a heading, the directions will change relative to the heading.
+   */
+struct intersection{
+
+       int NE;
+       int SE;
+       int SW;
+       int NW;
+};
 
 /* function prototypes, to be added if needed
 */
@@ -51,18 +66,18 @@ bool confirmColor(int colorDefine)
 
 /*
     Take Color sensor reading 
-    Return int-average of 5 readings
+    Return int-average of 10 readings
 */
 int readColor()
 {
     int counts = 10;
-    int sum = 0;
+    double sum = 0.0;
     for (int i = 0; i < counts; i++)
     {
         sum += COLORSENSOR;
     }
 
-    return (sum / counts);
+    return (int)((sum / counts) + 0.5);
 }
 
 inline void forwardFullSpeed() 
@@ -136,7 +151,6 @@ sub move_robot(){
             if (confirmColor(RED))
             {
                 PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
-                //isOnBlack = false;
                 turnRight90();
                 turnRight90();
                 Wait(500);
@@ -149,23 +163,24 @@ sub move_robot(){
                 forwardFullSpeed();
             }
         }
-        /*
+        
         else if (YELLOW == colorOutput) // yellow is intersection
         {
             Off(MOTORS);  
             if (confirmColor(YELLOW))
             {
                 PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
-                // TODO, scan_surroundings() if during localization; turn if moving to destination
+                scan_surroundings();
+                // After scanning intersection, need to move out of yellow first
                 forwardFullSpeed();
-
-                Wait(300); // remove later
+                Wait(300); 
             }
             else
             {
                 forwardFullSpeed();
             }
         }
+        /*
         else if (BLACK != colorOutput) // moving out of black road, get back.
         {
             Off(MOTORS);  
@@ -192,21 +207,25 @@ sub move_robot(){
    It takes readings of the colour of the 4 squares surrounding the
    intersection and returns an intersection variable which holds the data.
 */
-// intersection scan_surroundings(){
-//     intersection rsense;
-//     ////////////////////////////////////////////////////////////////////////////
-//     // TO DO:
-//     //
-//     // Implement a function in which the robot will scan the colour of the
-//     // surrounding squares at an interesection.
-//     // It will use the colour sensor to take readings from all four squares
-//     // in each of the NE, SE, SW, NW directions relative to the forward facing
-//     // direction of the robot.
-//     //
-//     ////////////////////////////////////////////////////////////////////////////
+intersection scan_surroundings(){
+    intersection rsense;
+    ////////////////////////////////////////////////////////////////////////////
+    // TO DO:
+    //
+    // Implement a function in which the robot will scan the colour of the
+    // surrounding squares at an interesection.
+    // It will use the colour sensor to take readings from all four squares
+    // in each of the NE, SE, SW, NW directions relative to the forward facing
+    // direction of the robot.
+    //
+    ////////////////////////////////////////////////////////////////////////////
 
-//     return rsense;
-// }
+
+    // TODO
+    
+
+    return rsense;
+}
 
 
 
