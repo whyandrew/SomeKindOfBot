@@ -22,6 +22,11 @@ mutex motorMutex; // All motor movement changes use this mutex
 #define DEGREE90    300
 #define DEGREE180   600
 
+// amount to turn when going out of black route
+#define DEGREEADJUST 15
+// amount in ms to backup when going out of black route
+#define TIMEBACKUP 500
+
 /* Represents an interesection (yellow square) on the grid.
 
    Holds data on the surroundings of the intersection, namely coloured(or white)
@@ -120,6 +125,49 @@ inline void turn180()
     RotateMotorEx(OUT_AC, SLOWSPEED, DEGREE180, -100, true, true);
 }
 
+inline void turn(bool left, int degrees)
+{
+    if (left)
+    {
+        RotateMotorEx(OUT_AC, SLOWSPEED, degrees, -100, true, true);
+    }
+    else // turn right
+    {
+        RotateMotorEx(OUT_AC, SLOWSPEED, degrees, 100, true, true);
+    }
+}
+
+/*
+    Handle moving back on black route, assume already out of bound
+*/
+void backOnBlack()
+{
+    /*
+        First backup abit, then adjust heading using argument, then move forward
+    */
+    bool left = true;
+    double factor = 1.0;
+
+    while (BLACK != readColor())
+    {
+        reverse();
+        Wait(TIMEBACKUP);
+        Off(MOTORS);
+        turn(left, (int)(factor * DEGREEADJUST));
+        Off(MOTORS);
+        forwardSlowMo();
+        Wait(TIMEBACKUP);
+        // This will exit loop with motors moving forward, without Off() here
+        left = !left;
+        if (!left)
+        {
+            factor += 1.0;
+        }
+    }
+}
+
+
+
 /* Subroutine which moves the robot forward from one intersection to the next
 */
 sub move_robot(){
@@ -179,15 +227,14 @@ sub move_robot(){
             {
                 forwardFullSpeed();
             }
-        }
-        /*
+        }        
         else if (BLACK != colorOutput) // moving out of black road, get back.
         {
             Off(MOTORS);  
             if (confirmColor(colorOutput))
             {
                 PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
-                // TODO, get back on black road...
+                backOnBlack();
                 forwardFullSpeed();
 
                 Wait(300); // remove later
@@ -198,7 +245,6 @@ sub move_robot(){
             }
 
         }
-        */
         Wait(50);
     }
 }
