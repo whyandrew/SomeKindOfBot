@@ -45,7 +45,7 @@ struct intersection{
 
 /* function prototypes, to be added if needed
 */
-
+intersection scan_surroundings();
 
 /* 
     Take a few more readings
@@ -76,13 +76,13 @@ bool confirmColor(int colorDefine)
 int readColor()
 {
     int counts = 10;
-    double sum = 0.0;
+    float sum = 0.0;
     for (int i = 0; i < counts; i++)
     {
         sum += COLORSENSOR;
     }
 
-    return (int)((sum / counts) + 0.5);
+    return ((sum / counts) + 0.5);
 }
 
 inline void forwardFullSpeed() 
@@ -146,14 +146,14 @@ void backOnBlack()
         First backup abit, then adjust heading using argument, then move forward
     */
     bool left = true;
-    double factor = 1.0;
+    float factor = 1.0;
 
     while (BLACK != readColor())
     {
         reverse();
         Wait(TIMEBACKUP);
         Off(MOTORS);
-        turn(left, (int)(factor * DEGREEADJUST));
+        turn(left, (factor * DEGREEADJUST));
         Off(MOTORS);
         forwardSlowMo();
         Wait(TIMEBACKUP);
