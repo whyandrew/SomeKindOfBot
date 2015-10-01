@@ -1,17 +1,83 @@
 int color;
+#define BLACK 1
+#define BLUE 2
+#define GREEN 3
+#define YELLOW 4
+#define RED 5
+#define WHITE 6
+
 #define COLORSENSOR SENSOR_1
+#define FULLSPEED 40
+#define SLOWSPEED 30
+#define CENTER_DISTANCE 100
+
+
+#define FULL_TURN 1040
+
+string colors[] = {
+    "?",
+    "Black",
+    "Blue",
+    "Green",
+    "Yellow",
+    "Red",
+    "White"
+};
+
 task main() {
+    //
+
      SetSensorColorFull(IN_1);
-     int prev = 0;
-     for(int i=1; i<50; i++)
-     {
-         NumOut(0, LCD_LINE1, prev);
-         NumOut(0, LCD_LINE2, COLORSENSOR);
-         RotateMotorEx(OUT_AC, 30, -15, 0, true, true);
-         if (prev != COLORSENSOR) {
-             PlayToneEx((COLORSENSOR + 1) * 100,400,1,FALSE);
-         }
-         prev = COLORSENSOR;
+     OnFwd(OUT_AC, SLOWSPEED);
+     until(COLORSENSOR != BLACK);
+     Off(OUT_AC);
+     if(COLORSENSOR == YELLOW) {
+         //OnFwd(OUT_AC, SLOWSPEED);
+         //until(COLORSENSOR != YELLOW);
+         //Off(OUT_AC);
+         RotateMotorEx(OUT_AC, SLOWSPEED, CENTER_DISTANCE, 0, true, true);
      }
+
+     RotateMotorEx(OUT_AC, SLOWSPEED, 20, 0, true, true);
+     //RotateMotorEx(OUT_AC, FULLSPEED, FULL_TURN, -100, true, true);
+
+     OnFwd(OUT_A, FULLSPEED);
+     OnRev(OUT_C, FULLSPEED);
+     int corners[4];
+     for (int i = 0; i<4; i++) {
+           until(COLORSENSOR != BLACK);
+           corners[i] = COLORSENSOR;
+           until(COLORSENSOR == BLACK);
+           TextOut(0, LCD_LINE5, "????");
+     }
+
+     Stop(OUT_A);
+     Stop(OUT_C);
+     TextOut(0, LCD_LINE1, colors[corners[0]]);
+     TextOut(0, LCD_LINE2, colors[corners[1]]);
+     TextOut(0, LCD_LINE3, colors[corners[2]]);
+     TextOut(0, LCD_LINE4, colors[corners[3]]);
+     /*
+     int prev = 0;
+            //RotateMotorEx(OUT_AC, MOTOR_SPEED, FULL_TURN/2, -100, true, true);
+     while (true) {
+         while(COLORSENSOR == BLACK) {
+              RotateMotorEx(OUT_AC, MOTOR_SPEED, 20, 0, true, true);
+         }
+         switch(COLORSENSOR) {
+             case RED:
+                 RotateMotorEx(OUT_AC, MOTOR_SPEED, FULL_TURN/2, -100, true, true);
+                 TextOut(0, LCD_LINE1, "Red");
+                 break;
+             case YELLOW:
+                 RotateMotorEx(OUT_AC, MOTOR_SPEED, FULL_TURN/2, -100, true, true);
+                 TextOut(0, LCD_LINE1, "Yellow");
+                 break;
+             default:
+                 TextOut(0, LCD_LINE1, "???");
+                 while (true);
+         }
+     }
+     */
 }
 

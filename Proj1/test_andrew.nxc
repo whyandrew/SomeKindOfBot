@@ -14,22 +14,24 @@ int color;
 #define RIGHTMOTOR OUT_A 
 
 mutex motorMutex; // All motor movement changes use this mutex
-#define FULLSPEED 30
-#define SLOWSPEED 20
-
-// Amount of wheel degree rotation to get 45/90/180 degree turn
-#define DEGREE45    150
+#define FULLSPEED 40
+#define SLOWSPEED 30
 
 // amount to turn when going out of black route
 //#define DEGREEADJUST 5
 // amount in ms to backup when going out of black route
-#define TIMEBACKUP 500
+#define TIMEBACKUP 300
 
 // From McGee
-#define TURNSPEED 40
 #define DEGREE360 1040
 #define DEGREE180 520
 #define DEGREE90  260
+#define DEGREE45  130
+#define DEGREE05  15
+
+// Distance to be adjusted after sensor detects yellow intersection
+// Use with FULLSPEED
+#define CENTER_DISTANCE 120
 
 /* Represents an interesection (yellow square) on the grid.
 
@@ -47,6 +49,16 @@ struct intersection{
        int NW;
 };
 
+string colors[] = {
+    "?       ",
+    "Black   ",
+    "Blue    ",
+    "Green   ",
+    "Yellow  ",
+    "Red     ",
+    "White   "
+};
+
 /* function prototypes, to be added if needed
 */
 intersection scan_surroundings();
@@ -56,56 +68,35 @@ intersection scan_surroundings();
 */
 inline void printColor(int color)
 {
-    if (BLACK == color)
-        TextOut(0, LCD_LINE1, "BLACK   ");
-    else if (WHITE == color)
-        TextOut(0, LCD_LINE1, "White   ");
-    else if (BLUE == color)
-        TextOut(0, LCD_LINE1, "BLUE    ");
-    else if (RED == color)
-        TextOut(0, LCD_LINE1, "RED     ");
-    else if (GREEN == color)
-        TextOut(0, LCD_LINE1, "GREEN   ");
-    else if (YELLOW == color)
-        TextOut(0, LCD_LINE1, "YELLOW  ");
-}
-
-/* 
-    Take a few more readings
-    Return true if all readings are the same as input colorDefine, else false
-*/
-bool confirmColor(int colorDefine)
-{
-    // TODO: need to use some stats model? Or 9/10 is ok?
-
-    int readCounts = 50;
-    bool ret = true;
-
-    for (; readCounts > 0; readCounts--)
-    {
-        if (colorDefine != COLORSENSOR)
-        {
-            ret = false;
-        }
-    }
-
-    return ret;
+    TextOut(0, LCD_LINE1, colors[color]);
 }
 
 /*
     Take Color sensor reading 
-    Return int-average of 10 readings
+    Return the most detected color
 */
-int readColor()
-{
-    int counts = 10;
-    int sum = 0;
-    for (int i = 0; i < counts; i++)
+int readColor(int numOfSamples)
+{    
+    int sample = 0;
+    int colorSamples[] = {0,0,0,0,0,0,0}; // array index == color define
+    int ret;
+
+    for (int i = 0; i < numOfSamples; i++)
     {
-        sum += COLORSENSOR;
+        sample = COLORSENSOR;
+        colorSamples[sample]++;        
     }
 
-    return ((sum / counts));
+    ret = 1;
+    for (int i = 2; i < 7; i++)
+    {
+        if (colorSamples[i] > colorSamples[ret])
+        {
+            ret = i;
+        }
+    }
+
+    return ret;
 }
 
 inline void forwardFullSpeed() 
@@ -125,44 +116,95 @@ inline void reverse()
 
 inline void turnLeft45()
 {
-    RotateMotorEx(OUT_AC, SLOWSPEED, DEGREE45, 100, true, true);
+    RotateMotorEx(OUT_AC, FULLSPEED, DEGREE45, 100, true, true);
 }
 
 inline void turnRight45()
 {
-    RotateMotorEx(OUT_AC, SLOWSPEED, DEGREE45, -100, true, true);
+    RotateMotorEx(OUT_AC, FULLSPEED, DEGREE45, -100, true, true);
 }
 
 inline void turnLeft90()
 {
-    RotateMotorEx(OUT_AC, SLOWSPEED, DEGREE90, 100, true, true);
+    RotateMotorEx(OUT_AC, FULLSPEED, DEGREE90, 100, true, true);
 }
 
 inline void turnRight90()
 {
-    RotateMotorEx(OUT_AC, SLOWSPEED, DEGREE90, -100, true, true);
+    RotateMotorEx(OUT_AC, FULLSPEED, DEGREE90, -100, true, true);
 }
 
 inline void turn180()
 {
-    RotateMotorEx(OUT_AC, TURNSPEED, DEGREE180, -100, true, true);
+    RotateMotorEx(OUT_AC, FULLSPEED, DEGREE180, -100, true, true);
 }
 
 inline void turn360()
 {
-    RotateMotorEx(OUT_AC, TURNSPEED, DEGREE360, -100, true, true);
+    RotateMotorEx(OUT_AC, FULLSPEED, DEGREE360, -100, true, true);
 }
 
 inline void turn(bool left, int degrees)
 {
     if (left)
     {
-        RotateMotorEx(OUT_AC, SLOWSPEED, degrees, -100, true, true);
+        RotateMotorEx(OUT_AC, FULLSPEED, degrees, -100, true, true);
     }
     else // turn right
     {
-        RotateMotorEx(OUT_AC, SLOWSPEED, degrees, 100, true, true);
+        RotateMotorEx(OUT_AC, FULLSPEED, degrees, 100, true, true);
     }
+}
+
+inline void reportError(string msg)
+{
+    TextOut(0, LCD_LINE1, "***********************");
+    TextOut(0, LCD_LINE2, msg);
+    TextOut(0, LCD_LINE3, "***********************");
+    Wait(5000);
+    Stop(true);
+}
+
+/*
+    Handle moving back on black route, assume already out of bound
+*/
+void stayOnBlack()
+{
+    int factor = 1;
+    // always try left side first, true == left
+    bool whichSide = true; 
+    bool isDone = false;
+
+    TextOut(0, LCD_LINE2, "Moving back on road....");
+
+    while (!isDone)
+    {
+        NumOut(0, LCD_LINE3, 5 * factor);
+
+        turn(whichSide, DEGREE05 * factor);
+        Wait(250);
+
+        if (readColor(20) == BLACK)
+        {
+            isDone = true;
+        }
+        else
+        {
+            turn(!whichSide, DEGREE05 * factor * 2);
+            Wait(250);
+            if (readColor(20) == BLACK)
+            {
+                isDone = true;
+            }
+        }
+        factor += 1;
+        if (factor > 20)
+        {
+            reportError("ERROR: +100 degrees tested");
+        }
+    }
+
+    ClearScreen();
 }
 
 /*
@@ -179,13 +221,13 @@ void backOnBlack()
     // always try left side first
     bool tryLeft = true;
     
-    // Use for testing forward move, assume using forwardSlowMo()
+    // Use for testing forward move, using forwardSlowMo()
     int count = 10;
     int timeSlice = 50;
     
     TextOut(0, LCD_LINE2, "BackOnBlack....");
 
-    while (BLACK != readColor())
+    while (BLACK != readColor(10))
     {
         count = 20;
         // only increment once each left and right sides are tested
@@ -203,10 +245,10 @@ void backOnBlack()
             TextOut(0, LCD_LINE4, "RIGHT   ");
             
         reverse();
-        until (BLACK == readColor());
-        printColor(readColor());
+        until (BLACK == readColor(10));
+        printColor(readColor(5));
         Wait(TIMEBACKUP);    // this is a guess work... and hope it doesn't hit a tight angle which it will hit black and quickly hit non-black again
-        printColor(readColor());
+        printColor(readColor(5));
         Off(MOTORS);
         if (tryLeft)
         {
@@ -217,7 +259,7 @@ void backOnBlack()
             turn(false, 2 * adjustment);
         }
         
-        printColor(readColor());
+        printColor(readColor(5));
         Off(MOTORS);
 
         forwardSlowMo();
@@ -226,14 +268,14 @@ void backOnBlack()
         for (; (count > 0) && isBlack; count--)
         {
             Wait(timeSlice);
-            int reading = readColor();
+            int reading = readColor(10);
             isBlack = (BLACK == reading);
             printColor(reading);
         }
             
         //until (BLACK != readColor());
         Off(MOTORS);
-        printColor(readColor());
+        printColor(readColor(5));
         Wait(1500);
         tryLeft = !tryLeft;
     }
@@ -264,63 +306,54 @@ sub move_robot(){
 
     while (true)
     {
-        colorOutput = readColor();
-        //NumOut(0, LCD_LINE2, colorOutput);
-        printColor(colorOutput);
+        /*
+        until(BLACK != readColor(50));
+        Off(MOTORS);
+        Wait(500);
 
+        colorOutput = readColor(50);
+        */
+        bool isBlack = true;
+        while (isBlack)
+        {
+            colorOutput = readColor(50);
+            if (BLACK != colorOutput)
+            {
+                isBlack = false;
+            }
+        }
+        Off(MOTORS);
+        Wait(500);
+
+        printColor(colorOutput);
 
         if (RED == colorOutput) // Hit red wall, do 180 turn
         {
-            Off(MOTORS);
-            if (confirmColor(RED))
-            {
-                PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
-                turn180();
-                Wait(500);
-                RotateMotorEx(MOTORS, SLOWSPEED, 50, 0, true, true);
-                Wait(500);
-                forwardFullSpeed();
-            }
-            else 
-            {
-                forwardFullSpeed();
-            }
+            PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
+            turn180();
+            Wait(500);
+            RotateMotorEx(MOTORS, SLOWSPEED, 50, 0, true, true);
+            forwardFullSpeed();
         }
-        
         else if (YELLOW == colorOutput) // yellow is intersection
         {
-            Off(MOTORS);  
-            if (confirmColor(YELLOW))
-            {
-                PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
-                scan_surroundings();
-                // After scanning intersection, need to move out of yellow first
-                forwardFullSpeed();
-                Wait(300); 
-            }
-            else
-            {
-                forwardFullSpeed();
-            }
+            PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
+            Wait(1000);
+            scan_surroundings();
+            // After scanning intersection, need to move out of yellow first
+            forwardFullSpeed();
+            Wait(300); 
         }        
         else if (BLACK != colorOutput) // moving out of black road, get back.
         {
-            Off(MOTORS);  
-            if (confirmColor(colorOutput))
-            {
-                PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
-                backOnBlack();
-                forwardFullSpeed();
-
-                Wait(300); // remove later
-            }
-            else
-            {
-                forwardFullSpeed();
-            }
-
+            //PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
+            stayOnBlack();
+            forwardFullSpeed();
         }
-        Wait(10);
+        else
+        {
+            forwardFullSpeed();
+        }
     }
 }
 
@@ -341,10 +374,30 @@ intersection scan_surroundings(){
     //
     ////////////////////////////////////////////////////////////////////////////
 
+    // Adjust sensor forward so wheels align with intersection, after this sensor should be over black
+    if(readColor(10) == YELLOW) {
+         RotateMotorEx(OUT_AC, SLOWSPEED, CENTER_DISTANCE, 0, true, true);
+    }
 
-    // TODO
-    
+    //RotateMotorEx(OUT_AC, SLOWSPEED, 20, 0, true, true);
+    OnFwd(OUT_A, FULLSPEED);
+    OnRev(OUT_C, FULLSPEED);
+    int corners[4];
+    for (int i = 0; i<4; i++) {
+       until(readColor(10) != BLACK);
+       corners[i] = readColor(10);
+       until(readColor(10) == BLACK);
+       TextOut(0, LCD_LINE5, "????");
+    }
 
+    Off(MOTORS);
+    TextOut(0, LCD_LINE1, colors[corners[0]]);
+    TextOut(0, LCD_LINE2, colors[corners[1]]);
+    TextOut(0, LCD_LINE3, colors[corners[2]]);
+    TextOut(0, LCD_LINE4, colors[corners[3]]);
+    Wait(3000);
+
+    ClearScreen();
     return rsense;
 }
 
