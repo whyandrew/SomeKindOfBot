@@ -19,13 +19,17 @@ mutex motorMutex; // All motor movement changes use this mutex
 
 // Amount of wheel degree rotation to get 45/90/180 degree turn
 #define DEGREE45    150
-#define DEGREE90    300
-#define DEGREE180   600
 
 // amount to turn when going out of black route
-#define DEGREEADJUST 15
+//#define DEGREEADJUST 5
 // amount in ms to backup when going out of black route
 #define TIMEBACKUP 500
+
+// From McGee
+#define TURNSPEED 40
+#define DEGREE360 1040
+#define DEGREE180 520
+#define DEGREE90  260
 
 /* Represents an interesection (yellow square) on the grid.
 
@@ -46,6 +50,25 @@ struct intersection{
 /* function prototypes, to be added if needed
 */
 intersection scan_surroundings();
+
+/*
+  Print color on LCD Screen Line 1
+*/
+inline void printColor(int color)
+{
+    if (BLACK == color)
+        TextOut(0, LCD_LINE1, "BLACK   ");
+    else if (WHITE == color)
+        TextOut(0, LCD_LINE1, "White   ");
+    else if (BLUE == color)
+        TextOut(0, LCD_LINE1, "BLUE    ");
+    else if (RED == color)
+        TextOut(0, LCD_LINE1, "RED     ");
+    else if (GREEN == color)
+        TextOut(0, LCD_LINE1, "GREEN   ");
+    else if (YELLOW == color)
+        TextOut(0, LCD_LINE1, "YELLOW  ");
+}
 
 /* 
     Take a few more readings
@@ -76,13 +99,13 @@ bool confirmColor(int colorDefine)
 int readColor()
 {
     int counts = 10;
-    float sum = 0.0;
+    int sum = 0;
     for (int i = 0; i < counts; i++)
     {
         sum += COLORSENSOR;
     }
 
-    return ((sum / counts) + 0.5);
+    return ((sum / counts));
 }
 
 inline void forwardFullSpeed() 
@@ -122,7 +145,12 @@ inline void turnRight90()
 
 inline void turn180()
 {
-    RotateMotorEx(OUT_AC, SLOWSPEED, DEGREE180, -100, true, true);
+    RotateMotorEx(OUT_AC, TURNSPEED, DEGREE180, -100, true, true);
+}
+
+inline void turn360()
+{
+    RotateMotorEx(OUT_AC, TURNSPEED, DEGREE360, -100, true, true);
 }
 
 inline void turn(bool left, int degrees)
@@ -145,27 +173,74 @@ void backOnBlack()
     /*
         First backup abit, then adjust heading using argument, then move forward
     */
-    bool left = true;
-    float factor = 1.0;
+    //bool left = true;
+    int adjustment = 0;
+    int increment = 15;
+    // always try left side first
+    bool tryLeft = true;
+    
+    // Use for testing forward move, assume using forwardSlowMo()
+    int count = 10;
+    int timeSlice = 50;
+    
+    TextOut(0, LCD_LINE2, "BackOnBlack....");
 
     while (BLACK != readColor())
     {
-        reverse();
-        Wait(TIMEBACKUP);
-        Off(MOTORS);
-        turn(left, (factor * DEGREEADJUST));
-        Off(MOTORS);
-        forwardSlowMo();
-        Wait(TIMEBACKUP);
-        // This will exit loop with motors moving forward, without Off() here
-        left = !left;
-        if (!left)
+        count = 20;
+        // only increment once each left and right sides are tested
+        if (tryLeft)
         {
-            factor += 1.0;
+            adjustment += increment;
         }
-    }
-}
+        
+        NumOut(0, LCD_LINE3, (adjustment) );
+        if (tryLeft)
+        {
+            TextOut(0, LCD_LINE4, "LEFT   ");
+        }
+        else
+            TextOut(0, LCD_LINE4, "RIGHT   ");
+            
+        reverse();
+        until (BLACK == readColor());
+        printColor(readColor());
+        Wait(TIMEBACKUP);    // this is a guess work... and hope it doesn't hit a tight angle which it will hit black and quickly hit non-black again
+        printColor(readColor());
+        Off(MOTORS);
+        if (tryLeft)
+        {
+            turn(true, adjustment);
+        }
+        else // since left side didn't work, need to turn 2*adjust to right side
+        {
+            turn(false, 2 * adjustment);
+        }
+        
+        printColor(readColor());
+        Off(MOTORS);
 
+        forwardSlowMo();
+        //Wait(TIMEBACKUP);
+        bool isBlack = true;
+        for (; (count > 0) && isBlack; count--)
+        {
+            Wait(timeSlice);
+            int reading = readColor();
+            isBlack = (BLACK == reading);
+            printColor(reading);
+        }
+            
+        //until (BLACK != readColor());
+        Off(MOTORS);
+        printColor(readColor());
+        Wait(1500);
+        tryLeft = !tryLeft;
+    }
+    
+    TextOut(0, LCD_LINE2, "EXIT                ");
+    Wait(1000);
+}
 
 
 /* Subroutine which moves the robot forward from one intersection to the next
@@ -190,7 +265,8 @@ sub move_robot(){
     while (true)
     {
         colorOutput = readColor();
-        NumOut(0, LCD_LINE2, colorOutput);
+        //NumOut(0, LCD_LINE2, colorOutput);
+        printColor(colorOutput);
 
 
         if (RED == colorOutput) // Hit red wall, do 180 turn
@@ -199,8 +275,7 @@ sub move_robot(){
             if (confirmColor(RED))
             {
                 PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
-                turnRight90();
-                turnRight90();
+                turn180();
                 Wait(500);
                 RotateMotorEx(MOTORS, SLOWSPEED, 50, 0, true, true);
                 Wait(500);
@@ -245,7 +320,7 @@ sub move_robot(){
             }
 
         }
-        Wait(50);
+        Wait(10);
     }
 }
 
