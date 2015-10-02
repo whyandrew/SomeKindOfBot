@@ -1,7 +1,6 @@
 int color;
 #define COLORSENSOR SENSOR_1
 
-
 #define BLACK   1
 #define WHITE   6
 #define BLUE    2
@@ -15,23 +14,22 @@ int color;
 
 mutex motorMutex; // All motor movement changes use this mutex
 #define FULLSPEED 40
+#define FULLSPEED_C FULLSPEED-5 // Motor OUT_C is stronger than A, reduce power to compensate
 #define SLOWSPEED 30
 
-// amount to turn when going out of black route
-//#define DEGREEADJUST 5
-// amount in ms to backup when going out of black route
-#define TIMEBACKUP 300
-
-// From McGee
+// Amount of motor sync-rotation to turn robot
 #define DEGREE360 1040
 #define DEGREE180 520
 #define DEGREE90  260
-#define DEGREE45  130
 #define DEGREE05  15
 
 // Distance to be adjusted after sensor detects yellow intersection
 // Use with FULLSPEED
 #define CENTER_DISTANCE 125
+
+// Num of reads to get best color result
+#define NUMREAD 500
+#define NUMREADLESS 250
 
 /* Represents an interesection (yellow square) on the grid.
 
@@ -51,12 +49,12 @@ struct intersection{
 
 string colors[] = {
     "Color 0?",
-    "Black   ",
-    "Blue    ",
-    "Green   ",
-    "Yellow  ",
-    "Red     ",
-    "White   ",
+    "Black   ", // 1
+    "Blue    ", // 2
+    "Green   ", // 3
+    "Yellow  ", // 4
+    "Red     ", // 5
+    "White   ", // 6
     "Color 7?",
     "Color 8?",
     "Color 9?"
@@ -109,6 +107,89 @@ int readColor(int numOfSamples)
     return ret;
 }
 
+// Rotate & position sensor to the middle of the black road's width
+void locateRoadMiddle()
+{
+    long startTime, turnTime;
+    
+    Off(MOTORS);
+    // Check if sensor is currently on black or not
+    // If on black, move to just outside edge of black
+    if (readColor(NUMREAD) == BLACK)
+    {
+        OnRev(OUT_A, FULLSPEED);
+        OnFwd(OUT_C, FULLSPEED_C);
+        until( readColor(NUMREAD) != BLACK);
+        Wait(50);
+        Off(MOTORS);
+    }
+
+    // rotate left and time the width of black color
+    OnFwd(OUT_A, FULLSPEED);
+    OnRev(OUT_C, FULLSPEED_C);
+
+    // TODO : need to do confirm of color for all the "until" statements in case of noise?
+    until( readColor(NUMREAD) == BLACK);
+    startTime = CurrentTick();
+    Wait(100);
+    until( readColor(NUMREAD) != BLACK);
+    turnTime = CurrentTick() - startTime;
+
+    Off(MOTORS);
+    Wait(500);
+
+    // Now move to middle of the width base on timestamp
+    OnFwd(OUT_C, FULLSPEED_C);
+    OnRev(OUT_A, FULLSPEED);
+    Wait(turnTime * 0.75); // fudge factor due to motors uneven power in turns
+    Off(MOTORS);
+}
+
+// Make a turn until sensor see the next black road, so either 90 or 180 degree
+void turnToNextRoad(bool turnLeft)
+{
+    bool done = false;
+    Off(MOTORS); 
+
+    if (turnLeft)
+    {
+        OnFwd(OUT_A, FULLSPEED);
+        OnRev(OUT_C, FULLSPEED_C);
+    }
+    else
+    {
+        OnRev(OUT_A, FULLSPEED);
+        OnFwd(OUT_C, FULLSPEED_C);
+    }
+    
+    // First, spin til it's NOT black, and double check color
+    while (!done)
+    {
+        while(BLACK == readColor(NUMREAD)) {}
+
+        Wait(50); // so it's reading a slightly different spot
+        if ( BLACK == readColor(NUMREADLESS))
+        {
+            done = true;    
+        }
+    }
+
+    // Then, spin til it's black, and double check color
+    while (!done)
+    {
+        while(BLACK != readColor(NUMREAD)) {}
+
+        Wait(50); // so it's reading a slightly different spot
+        if ( BLACK == readColor(NUMREADLESS))
+        {
+            done = true;    
+        }
+    }
+
+    locateRoadMiddle();
+    Off(MOTORS);
+}
+
 inline void forwardFullSpeed() 
 {
     OnFwdSync(MOTORS, FULLSPEED, 0);
@@ -119,39 +200,20 @@ inline void forwardSlowMo()
     OnFwdSync(MOTORS, SLOWSPEED, 0);
 }
 
-inline void reverse()
-{
-    OnRevSync(MOTORS, SLOWSPEED, 0);
-}
-
-inline void turnLeft45()
-{
-    RotateMotorEx(OUT_AC, FULLSPEED, DEGREE45, 100, true, true);
-}
-
-inline void turnRight45()
-{
-    RotateMotorEx(OUT_AC, FULLSPEED, DEGREE45, -100, true, true);
-}
-
 inline void turnLeft90()
 {
-    RotateMotorEx(OUT_AC, FULLSPEED, DEGREE90, 100, true, true);
+    turnToNextRoad(true);
 }
 
 inline void turnRight90()
 {
-    RotateMotorEx(OUT_AC, FULLSPEED, DEGREE90, -100, true, true);
+    turnToNextRoad(false);
 }
 
-inline void turn180()
+// Turn 180 degrees and also check if sensor is on black when finish
+inline void turn180onRed()
 {
-    RotateMotorEx(OUT_AC, FULLSPEED, DEGREE180, -100, true, true);
-}
-
-inline void turn360()
-{
-    RotateMotorEx(OUT_AC, FULLSPEED, DEGREE360, -100, true, true);
+    turnToNextRoad(true);
 }
 
 inline void turn(bool left, int degrees)
@@ -175,6 +237,7 @@ inline void reportError(string msg)
     Stop(true);
 }
 
+
 /*
     Handle moving back on black route, assume already out of bound
 */
@@ -191,18 +254,20 @@ void stayOnBlack()
     {
         NumOut(0, LCD_LINE3, 5 * factor);
 
+        // try left side
         turn(whichSide, DEGREE05 * factor);
         Wait(250);
 
-        if (readColor(20) == BLACK)
+        if (readColor(50) == BLACK)
         {
             isDone = true;
         }
         else
-        {
-            turn(!whichSide, DEGREE05 * factor * 2);
+        {   // Left doesn't hit black, try right side
+            // TODO : left and right turns are not even, may need to fudge the number a bit...
+            turn(!whichSide, DEGREE05 * factor * 3 / 2);
             Wait(250);
-            if (readColor(20) == BLACK)
+            if (readColor(50) == BLACK)
             {
                 isDone = true;
             }
@@ -210,9 +275,16 @@ void stayOnBlack()
         factor += 1;
         if (factor > 20)
         {
+            // TODO  : corner case when off black just before hitting red,
+            // then sensor won't find any black at all by turning left/right.
+            // Need to back up a bit but need to make sure after all these
+            // turning/checking, the robot direction is still close to when it
+            // first started this function (ie need make left & right turns even).
             reportError("ERROR: +100 degrees tested");
         }
     }
+
+    locateRoadMiddle();
 
     ClearScreen();
 }
@@ -239,7 +311,7 @@ sub move_robot(){
 
     while (true)
     {
-        while ((colorOutput = readColor(100)) == BLACK)
+        while ((colorOutput = readColor(NUMREAD)) == BLACK)
         {
             // spin until it's not black
         }
@@ -247,7 +319,7 @@ sub move_robot(){
         Off(MOTORS);
 
         // Double check color. Possible unreliable previous read if it happens at boundary of 2 colors
-        colorCheck = readColor(100);
+        colorCheck = readColor(NUMREAD);
         if (colorCheck != colorOutput)
         {
             TextOut(0, LCD_LINE5, "NOISE: ");
@@ -266,7 +338,9 @@ sub move_robot(){
         if (RED == colorOutput) // Hit red wall, do 180 turn
         {
             PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
-            turn180();
+            // Adjust forward so sensor is in middle of red before turning 180
+            RotateMotorEx(OUT_AC, SLOWSPEED, CENTER_DISTANCE, 0, true, true);
+            turn180onRed();
             Wait(500);
             RotateMotorEx(MOTORS, SLOWSPEED, 50, 0, true, true);
             forwardFullSpeed();
@@ -314,21 +388,46 @@ intersection scan_surroundings(){
     int curr_color;
     
     // Adjust sensor forward so wheels align with intersection, after this sensor should be over black
-    if(readColor(10) == YELLOW) {
+    if(readColor(100) == YELLOW) {
          RotateMotorEx(OUT_AC, SLOWSPEED, CENTER_DISTANCE, 0, true, true);
+    }
+    else
+    {   // This function should be called when we already reached yellow intersection
+        reportError("ERR:Scan Not Yellow");
+    }
+
+    // If robot enter yellow at an angle, sencor after previous adjustment may not be on black
+    if (readColor(100) != BLACK)
+    {
+        stayOnBlack();
     }
 
     //RotateMotorEx(OUT_AC, SLOWSPEED, 20, 0, true, true);
     OnFwd(OUT_A, FULLSPEED);
-    OnRev(OUT_C, FULLSPEED);
+    OnRev(OUT_C, FULLSPEED_C);
     int corners[4] = {0, 0, 0, 0};
     for (int i = 0; i<4; i++) 
     {
-        until((curr_color = readColor(10)) != BLACK);
-        corners[i] = curr_color;
+        bool done = false;
+        // robot spin and record non-black color as intersection colors
+        until((curr_color = readColor(NUMREAD)) != BLACK);
+        Wait(50); // do another read in slight differnt spot, in case previous read was on color boundary
+        corners[i] = readColor(NUMREAD);
         TextOut(0, lines[i], colors[curr_color]);
-        until(readColor(10) == BLACK);
+        // wait til black to record next corner
+        while (!done)
+        {
+            until (BLACK == readColor(NUMREAD));
+
+            Wait(50); // so it's reading a slightly different spot
+            if ( BLACK == readColor(NUMREADLESS))
+            {
+                done = true;    
+            }
+        }
     }
+
+    locateRoadMiddle();
 
     Off(MOTORS);
     Wait(4000);
@@ -345,8 +444,6 @@ task main() {
 
     move_robot();
     
-    Wait(1000);
-
 
 }
 
