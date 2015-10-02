@@ -9,54 +9,131 @@ int color;
 #define COLORSENSOR SENSOR_1
 #define FULLSPEED 40
 #define SLOWSPEED 30
-#define CENTER_DISTANCE 100
+#define CENTER_DISTANCE 105
 
 
 #define FULL_TURN 1040
+#define ROAD_SEARCH 100// Amount to pivot by when we lose the road (Determine a good value by experimentation)
 
 string colors[] = {
-    "?",
+    "Color 0?",
     "Black",
     "Blue",
     "Green",
     "Yellow",
     "Red",
-    "White"
+    "White",
+    "Color 7?",
+    "Color 8?",
+    "Color 9?"
 };
+
+int lines[] = {
+    LCD_LINE1,
+    LCD_LINE2,
+    LCD_LINE3,
+    LCD_LINE4
+};
+
+int readColor(int max)
+{
+    int counts = 1;
+    int sum = 0;
+    int prev = 0;
+    for (int i = 0; (i < max) && (counts <10); i++)
+    {
+        //sum += COLORSENSOR;
+        if (prev == COLORSENSOR)
+        {
+           counts++;
+        }
+        else {
+             counts = 0;
+             prev = COLORSENSOR;
+        }
+    }
+
+    return prev;
+}
 
 task main() {
     //
-
+     int curr_color;
      SetSensorColorFull(IN_1);
-     OnFwd(OUT_AC, SLOWSPEED);
-     until(COLORSENSOR != BLACK);
-     Off(OUT_AC);
-     if(COLORSENSOR == YELLOW) {
-         //OnFwd(OUT_AC, SLOWSPEED);
-         //until(COLORSENSOR != YELLOW);
-         //Off(OUT_AC);
-         RotateMotorEx(OUT_AC, SLOWSPEED, CENTER_DISTANCE, 0, true, true);
+     
+     /************************************
+     * Separate out into follow_road function?
+     */
+
+     bool en_route = true; // Haven't reached an intersection yet
+     while (en_route) {
+         // Head down road
+         OnFwd(OUT_AC, SLOWSPEED);
+         until((curr_color = COLORSENSOR) != BLACK);
+         Off(OUT_AC);
+         switch(curr_color) {
+             case RED: // We hit the outer border so we do a 180
+                 RotateMotorEx(OUT_AC, FULLSPEED, FULL_TURN/2, -100, true, true);
+                 break;
+             case YELLOW: // Found an intersection
+                 // Advance a short distance to get the pivot point centered over the intersection
+                 RotateMotorEx(OUT_AC, SLOWSPEED, CENTER_DISTANCE, 0, true, true);
+                 // Negate the while loop condition
+                 en_route = false;
+                 break;
+             default: // Gone off track so we must pivot to find the road again
+             
+                 // Pivot a short distance one way and look for black
+                 RotateMotorEx(OUT_AC, FULLSPEED, ROAD_SEARCH, -100, true, true);
+                 if (COLORSENSOR == BLACK) { // We initially corrected the right way
+                     // Go straight a little and then pivot by -0.5*ROAD_SEARCH
+                     // to straighten out? Or maybe do this in one curved motion?
+                     ;
+                 } else {
+                     // Pivot back 2x the other way
+                      RotateMotorEx(OUT_AC, FULLSPEED, -2*ROAD_SEARCH, -100, true, true);
+                     // (Hopefully a good ROAD_SEARCH value means that we have
+                     // now definitely turned the right way)
+
+                     // Go straight a little and then pivot by 0.5*ROAD_SEARCH to straighten out?
+                     // Or maybe do this in one curved motion?
+                 }
+         }
+
      }
+
+     
+     /************************************
+     * Separate out into scan_intersection function?
+     */
 
      RotateMotorEx(OUT_AC, SLOWSPEED, 20, 0, true, true);
      //RotateMotorEx(OUT_AC, FULLSPEED, FULL_TURN, -100, true, true);
 
      OnFwd(OUT_A, FULLSPEED);
      OnRev(OUT_C, FULLSPEED);
-     int corners[4];
+     int corners[4] = {0, 0, 0, 0};
+     //int curr_color;
+     //until(COLORSENSOR == BLACK);
      for (int i = 0; i<4; i++) {
-           until(COLORSENSOR != BLACK);
-           corners[i] = COLORSENSOR;
-           until(COLORSENSOR == BLACK);
-           TextOut(0, LCD_LINE5, "????");
+
+           until((curr_color = readColor(3)) != BLACK);
+           corners[i] = curr_color;
+           TextOut(0, lines[i], colors[corners[i]]);
+           until(readColor(10) == BLACK);
      }
 
-     Stop(OUT_A);
-     Stop(OUT_C);
-     TextOut(0, LCD_LINE1, colors[corners[0]]);
-     TextOut(0, LCD_LINE2, colors[corners[1]]);
-     TextOut(0, LCD_LINE3, colors[corners[2]]);
-     TextOut(0, LCD_LINE4, colors[corners[3]]);
+
+     }
+
+     Off(OUT_A);
+     Off(OUT_C);
+     
+     // Turn robot a little farther so that it's pointed down the road
+     
+     Wait(10000);
+     //RotateMotorEx(OUT_AC, SLOWSPEED, FULL_TURN, -100, true, true);
+     //TextOut(0, LCD_LINE5, "Done");
      /*
      int prev = 0;
             //RotateMotorEx(OUT_AC, MOTOR_SPEED, FULL_TURN/2, -100, true, true);
