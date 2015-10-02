@@ -341,6 +341,11 @@ sub move_robot(){
     int colorCheck;
     forwardFullSpeed();
 
+    //***** For DEMO ONLY **********
+    int intersectionCount = 0;
+    //******************************
+
+
     while (true)
     {
         while ((colorOutput = readColor(NUMREAD)) == BLACK)
@@ -369,7 +374,7 @@ sub move_robot(){
 
         if (RED == colorOutput) // Hit red wall, do 180 turn
         {
-            PlayToneEx((colorOutput + 1) * 100,400,4,FALSE);
+            PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
             // Adjust forward so sensor is in middle of red before turning 180
             RotateMotorEx(OUT_AC, SLOWSPEED, CENTER_DISTANCE, 0, true, true);
             turn180onRed();
@@ -379,9 +384,23 @@ sub move_robot(){
         }
         else if (YELLOW == colorOutput) // yellow is intersection
         {
-            //PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
+            PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
             Wait(1000);
-            scan_surroundings();
+            //***** For DEMO ONLY **********
+            //scan_surroundings();
+
+            RotateMotorEx(OUT_AC, SLOWSPEED, CENTER_DISTANCE, 0, true, true);
+            intersectionCount++;
+            if (intersectionCount & 0x1)
+            {
+                turnLeft90();
+            }
+            else 
+            {
+                turnRight90();
+            }
+            //******************************
+            // After scanning intersection, need to move out of yellow first
             forwardFullSpeed();
         }        
         else if (BLACK != colorOutput) // moving out of black road, get back.
@@ -440,7 +459,7 @@ intersection scan_surroundings(){
         bool done = false;
         // robot spin and record non-black color as intersection colors
         until((curr_color = readColor(NUMREAD)) != BLACK);
-        Wait(40); // do another read in slight differnt spot, in case previous read was on color boundary
+        //Wait(50); // do another read in slight differnt spot, in case previous read was on color boundary
         corners[i] = readColor(NUMREADLESS);
         PlayToneEx((corners[i] + 1) * 100,400,4,FALSE);
         TextOut(0, lines[i], colors[corners[i]]);
