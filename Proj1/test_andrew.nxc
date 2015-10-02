@@ -185,7 +185,7 @@ void stayOnBlack()
     bool whichSide = true; 
     bool isDone = false;
 
-    TextOut(0, LCD_LINE2, "Moving back on road....");
+    TextOut(0, LCD_LINE2, "Off road....");
 
     while (!isDone)
     {
@@ -234,17 +234,32 @@ sub move_robot(){
     ////////////////////////////////////////////////////////////////////////////
 
     int colorOutput;
+    int colorCheck;
     forwardFullSpeed();    
 
     while (true)
     {
-        while ((colorOutput = readColor(50) == BLACK))
+        while ((colorOutput = readColor(100)) == BLACK)
         {
             // spin until it's not black
         }
 
         Off(MOTORS);
-        Wait(500);
+
+        // Double check color. Possible unreliable previous read if it happens at boundary of 2 colors
+        colorCheck = readColor(100);
+        if (colorCheck != colorOutput)
+        {
+            TextOut(0, LCD_LINE5, "NOISE: ");
+            TextOut(0, LCD_LINE6, colors[colorOutput]);
+            colorOutput = colorCheck;
+            Wait(2000);
+            ClearScreen();
+        }
+        else
+        {
+            Wait(500);
+        }
 
         printColor(colorOutput);
 
@@ -311,7 +326,7 @@ intersection scan_surroundings(){
     {
         until((curr_color = readColor(10)) != BLACK);
         corners[i] = curr_color;
-        TextOut(0, lines[i], colors[corners[i]]);
+        TextOut(0, lines[i], colors[curr_color]);
         until(readColor(10) == BLACK);
     }
 
@@ -329,16 +344,7 @@ task main() {
     SetSensorColorFull(IN_1);
 
     move_robot();
-
-
-    //forwardFullSpeed();
     
-    // turnLeft90();
-    // Wait(1000);
-    // turnRight90();
-
-
-
     Wait(1000);
 
 
