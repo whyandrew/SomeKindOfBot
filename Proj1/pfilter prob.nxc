@@ -1026,7 +1026,7 @@ task main(){
             /* Renormalization step*/
             totalprob = 0;
             maxprob = 0;
-            for (i = 0; i < listSize i++) {
+            for (i = 0; i < listSize; i++) {
                 totalprob += list[i].prob;
             }
 
