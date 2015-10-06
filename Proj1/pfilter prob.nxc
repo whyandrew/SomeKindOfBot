@@ -183,6 +183,16 @@ int readColor(int numOfSamples)
     return ret;
 }
 
+// These are continuous turn..
+inline void turnLeft()
+{
+    OnFwdSync(MOTORS, FULLSPEED, -100);
+}
+inline void turnRight()
+{
+    OnFwdSync(MOTORS, FULLSPEED, 100);
+}
+
 // Rotate & position sensor to the middle of the black road's width
 void locateRoadMiddle()
 {
@@ -194,55 +204,52 @@ void locateRoadMiddle()
     // If on black, move to just outside edge of black
     if (readColor(NUMREAD) == BLACK)
     {
-        OnRev(OUT_A, FULLSPEED);
-        OnFwd(OUT_C, FULLSPEED_C);
+        turnRight();
         until( readColor(NUMREAD) != BLACK);
         Wait(50);
         Off(MOTORS);
     }
 
     // rotate left and time the width of black color
-    OnFwd(OUT_A, FULLSPEED);
-    OnRev(OUT_C, FULLSPEED_C);
+    turnLeft();
 
     // TODO : need to do confirm of color for all the "until" statements in case of noise?
-    until( readColor(NUMREAD) == BLACK);
+    until( readColor(10) == BLACK);
     startTime = CurrentTick();
-    Wait(100);
-    until( readColor(NUMREAD) != BLACK);
+    //Wait(100);
+    until( readColor(20) != BLACK);
     turnTime = CurrentTick() - startTime;
-
+    Wait(100);
     Off(MOTORS);
     Wait(500);
 
     // Now move to middle of the width base on timestamp
-    OnFwd(OUT_C, FULLSPEED_C);
-    OnRev(OUT_A, FULLSPEED);
-    Wait(turnTime * 0.75); // would be 0.5, but use .75 due to motors uneven power in turns
+    turnRight();
+    until (readColor(10) == BLACK);
+    Wait(turnTime * 0.5); // would be 0.5, but use .75 due to motors uneven power in turns
     Off(MOTORS);
 
     ClearScreen();
 }
 
 // Make a 90 turn until sensor see the next black road, 
-void turn90(bool turnLeft)
+void turn90(bool isLeft)
 {
+    //TODO : This needs fixes.... skipping black too often
     locateRoadMiddle();
 
     bool done = false;
     Off(MOTORS); 
 
-    if (turnLeft)
+    if (isLeft)
     {
         TextOut(0, LCD_LINE2, "Turning LEFT....");
-        OnFwd(OUT_A, SLOWSPEED);
-        OnRev(OUT_C, SLOWSPEED_C);
+        turnLeft();
     }
     else
     {
         TextOut(0, LCD_LINE2, "Turning RIGHT....");
-        OnRev(OUT_A, SLOWSPEED);
-        OnFwd(OUT_C, SLOWSPEED_C);
+        turnRight();
     }
     
     // First, spin til it's NOT black
@@ -280,11 +287,6 @@ inline void forwardFullSpeed()
     OnFwdSync(MOTORS, FULLSPEED, 0);
 }
 
-inline void forwardSlowMo()
-{
-    OnFwdSync(MOTORS, SLOWSPEED, 0);
-}
-
 inline void turnLeft90()
 {
     turn90(true);
@@ -302,8 +304,7 @@ void turn180onRed()
     Off(MOTORS); 
 
     TextOut(0, LCD_LINE2, "Turning 180....");
-    OnFwd(OUT_A, SLOWSPEED);
-    OnRev(OUT_C, SLOWSPEED_C);
+    turnLeft();
 
     // spin til it's black, and double check color
     while (!done)
@@ -324,10 +325,13 @@ void turn180onRed()
 }
 
 // TODO: changing this to use onFwdSync and time
-inline void turn(bool left, int degrees)
+inline void turnByDegrees(bool left, int degrees)
 {
+    // Left turn with RotateMotorEx is faster than right turn with same settings
+    // Compensate by reducing left turn "degrees" by 20%
     if (left)
     {
+        //degrees = (degrees * 4) / 5 ;
         RotateMotorEx(OUT_AC, FULLSPEED, degrees, -100, true, true);
     }
     else // turn right
@@ -363,7 +367,7 @@ void stayOnBlack()
         NumOut(0, LCD_LINE3, 5 * factor);
 
         // try left side
-        turn(whichSide, DEGREE05 * factor);
+        turnByDegrees(whichSide, DEGREE05 * factor);
         Wait(250);
 
         if (readColor(50) == BLACK)
@@ -373,7 +377,7 @@ void stayOnBlack()
         else
         {   // Left doesn't hit black, try right side
             // TODO : left and right turns are not even, may need to fudge the number a bit...
-            turn(!whichSide, DEGREE05 * factor * 3 / 2);
+            turnByDegrees(!whichSide, DEGREE05 * factor * 3 / 2);
             Wait(250);
             if (readColor(50) == BLACK)
             {
@@ -463,7 +467,7 @@ sub move_robot(){
             PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
             g_lastColor = YELLOW;
             isBoundary = true;
-            Wait(1000);
+            Wait(500);
             //scan_surroundings();
             // After scanning intersection, need to move out of yellow first
             //forwardFullSpeed();
@@ -516,8 +520,8 @@ intersection scan_surroundings(){
         stayOnBlack();
     }
 
-    OnFwd(OUT_A, FULLSPEED);
-    OnRev(OUT_C, FULLSPEED_C);
+    // TODO : make sure turning direction is correct: NE->SE->SW->NW
+    turnRight();
     int corners[4] = {0, 0, 0, 0};
     for (int i = 0; i<4; i++) 
     {
@@ -540,6 +544,11 @@ intersection scan_surroundings(){
             }
         }
     }
+
+    rsense.NE = corners[0];
+    rsense.SE = corners[1];
+    rsense.SW = corners[2];
+    rsense.NW = corners[3];
 
     locateRoadMiddle();
 
@@ -954,9 +963,11 @@ task main(){
         - normalize prob,
         - robp = highest particle.prob
 
-        // loop counter? when do we decide better to re-init all particles?
+        // TODO : loop counter? when do we decide better to re-init all particles?
     }
     */
+
+        // TODO : keep moving straight; randomize direction; or go in large circle?
         move_robot();
         if (RED == g_lastColor)
         {
