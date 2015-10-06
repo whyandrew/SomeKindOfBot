@@ -1,0 +1,23 @@
+task main()
+{
+
+
+ OnFwdSync(OUT_AC, 30, 0);
+ 
+ int factor = 1;
+ int degree = 15;
+
+ while (true)
+ {
+  RotateMotorEx(OUT_AC, 30, 12 * factor, -100, true, true);
+  RotateMotorEx(OUT_AC, 30, 15 * factor, 100, true, true);
+  Wait(1000);
+  factor++;
+  
+ }
+ 
+ 
+
+ 
+}
+ 

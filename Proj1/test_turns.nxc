@@ -9,8 +9,6 @@ int color;
 #define RED     5
 
 #define MOTORS OUT_AC
-#define LEFTMOTOR OUT_C 
-#define RIGHTMOTOR OUT_A 
 
 mutex motorMutex; // All motor movement changes use this mutex
 #define FULLSPEED   30
