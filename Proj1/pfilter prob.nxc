@@ -324,7 +324,7 @@ void stayOnBlack()
 
         // try left side first
         Wait(500);
-        turnLeft()
+        turnLeft();
         Wait((t*f) + pre);
         Off(MOTORS);
 
@@ -344,8 +344,8 @@ void stayOnBlack()
             }
             pre = f*t;
         }
-        factor++;
-        if (factor > 20)
+        f++;
+        if (f > 20)
         {
             // TODO  : corner case when off black just before hitting red,
             // then sensor won't find any black at all by turning left/right.
@@ -1025,7 +1025,10 @@ task main(){
                 }
 
                 //Prob = prob * MATCH^hits * MISMATCH^miss
-                list[i].prob = list[i].prob * pow(MATCH,hits) * pow(MISMATCH,hits);                
+                //*************************************
+                // TODO : no def for POW???
+                //*************************************
+                //list[i].prob = list[i].prob * pow(MATCH,hits) * pow(MISMATCH,misses);
             }
 
             // All particles updated... normalize prob and find current best
