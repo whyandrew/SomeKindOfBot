@@ -1,19 +1,3 @@
-/* Written by Kevin Alexander Lee
-
-  This is an implementation of NXT robot localization using probability and
-  particle filters.
-
-  Using the grid based map accompanying the code, the robot which initially
-  has no information about its coordinate position will be able to locate itself
-  and move to a specific target and destination.
-  
-  The NXT robot uses aspects of particle filters and probability sensing to
-  determine which position it is likely at.
-  
-*/
-
-/* the following section defines macros */
-
 /* macros for directions, chosen to not conflict with other definitions
    and to allow arithmetic between directions*/
 #define NORTH 100
@@ -39,23 +23,44 @@
 #define GWIDTH 3
 #define GHEIGHT 5
 
-/* macros for probability sensing
-   THRESHOLD - a decimal value in (0,1). Determines when a particle is likely enough to be the robot's
-               position
-   MATCH - a decimal value in (0,1). How much to affect the probability when a particle's data matches
-           the robot's surroundings, should be greater than MISMATCH
-   MISMATCH - a decimal value in (0,1). How much to affect the probability when a particle's data does not
-              match the robot's surroundings, should be less than MATCH
+#define RESETTHRESHOLD 100
 
-   decide these values for yourself
-   */
-#define THRESHOLD
-#define MATCH
-#define MISMATCH
+#define THRESHOLD 0.90
+#define MATCH 2 
+#define MISMATCH 0.5
 
 /* You may want to define macros to keep track of certain turning angles and
    speeds throughout your code. This provides an easy way to change them */
 
+#define COLORSENSOR SENSOR_1
+
+#define BLACK   1
+#define WHITE   6
+#define BLUE    2
+#define GREEN   3
+#define YELLOW  4
+#define RED     5
+
+#define MOTORS OUT_AC
+
+#define FULLSPEED   30
+#define FULLSPEED_C FULLSPEED-5 // Motor OUT_C is stronger than A, reduce power to compensate
+#define SLOWSPEED   30
+#define SLOWSPEED_C SLOWSPEED-5
+
+// Amount of motor sync-rotation to turn robot
+#define DEGREE360 1040
+#define DEGREE180 520
+#define DEGREE90  260
+#define DEGREE05  15
+
+// Distance to be adjusted after sensor detects yellow intersection
+// Use with FULLSPEED
+#define CENTER_DISTANCE 125
+
+// Num of reads to get best color result
+#define NUMREAD 400
+#define NUMREADLESS 200
 
 // True if still at localization, false if moving to target
 bool isLocalizing;
@@ -87,45 +92,11 @@ struct particle{
    When given a heading, the directions will change relative to the heading.
    */
 struct intersection{
-
        int NE;
        int SE;
        int SW;
        int NW;
 };
-
-/* function prototypes, to be added if needed
-*/
-
-#define COLORSENSOR SENSOR_1
-
-#define BLACK   1
-#define WHITE   6
-#define BLUE    2
-#define GREEN   3
-#define YELLOW  4
-#define RED     5
-
-#define MOTORS OUT_AC
-
-#define FULLSPEED   30
-#define FULLSPEED_C FULLSPEED-5 // Motor OUT_C is stronger than A, reduce power to compensate
-#define SLOWSPEED   30
-#define SLOWSPEED_C SLOWSPEED-5
-
-// Amount of motor sync-rotation to turn robot
-#define DEGREE360 1040
-#define DEGREE180 520
-#define DEGREE90  260
-#define DEGREE05  15
-
-// Distance to be adjusted after sensor detects yellow intersection
-// Use with FULLSPEED
-#define CENTER_DISTANCE 125
-
-// Num of reads to get best color result
-#define NUMREAD 400
-#define NUMREADLESS 200
 
 string colors[] = {
     "Color 0?",
@@ -575,20 +546,19 @@ sub change_direction(int orig, int new){
 
     int change = new - orig;
     /* selects the appropriate turn based on the headings given*/
-    switch (change){
+    switch (change % 4){
            case 3:
-           case -1:
                 //turn left 90 degrees
-                /* code solution here */
+                turnLeft90();
                 break;
-           case -3:
            case 1:
                 //turn right 90 degrees
-                /* code solution here */
+                turnRight90();
                 break;
            case 2:
-                // 180 degree turn
-                /* code solution here */
+                // 180 degree turn (2*90)
+                turnRight90();
+                turnRight90();
                 break;
     }
 }
@@ -628,7 +598,49 @@ int move_to(int s, int f, int h){
     //
     ////////////////////////////////////////////////////////////////////////////
 
+    // Move along x axis first  (if needed)
 
+    if (tx < 0) {
+        // Turn robot EAST
+        change_direction(heading, EAST);
+        // Update heading
+        heading = EAST;
+        // Move forward (tx) times
+        repeat (-tx) {
+            move_robot();
+        }
+
+    } else if (tx > 0) {
+        // Turn robot WEST
+        change_direction(heading, WEST);
+        // Update heading
+        heading = WEST;
+        // Move forward (tx) times
+        repeat (tx) {
+            move_robot();
+        }
+    }
+
+    // Now move along y axis (if needed)
+    if (ty < 0) {
+        // Turn robot NORTH
+        change_direction(heading, NORTH);
+        // Update heading
+        heading = NORTH;
+        // Move forward (-ty) times
+        repeat (-ty) {
+            move_robot();
+        }
+    } else if (ty > 0) {
+        // Turn robot SOUTH
+        change_direction(heading, SOUTH);
+        // Update heading
+        heading = SOUTH;
+        // Move forward (ty) times
+        repeat (ty) {
+            move_robot();
+        }
+    }
     return heading;
 }
 
@@ -642,19 +654,53 @@ int move_to(int s, int f, int h){
 */
 particle move(particle p){
 
-    ///////////////////////////////////////////////////////////////////////
-    // TO DO:
-    //
-    // Move particle p forward one interesection in the direction it is
-    // facing.
-    // Similar to the robot's behaviour, if a particle reaches the end of
-    // the map, it turns in the opposite direction and returns to the
-    // previous intersection it was at.
-    //
-    ///////////////////////////////////////////////////////////////////////
-
-
-    return p;
+     ///////////////////////////////////////////////////////////////////////
+     // TO DO:
+     //
+     // Move particle p forward one interesection in the direction it is
+     // facing.
+     // Similar to the robot's behaviour, if a particle reaches the end of
+     // the map, it turns in the opposite direction and returns to the
+     // previous intersection it was at.
+     //
+     ///////////////////////////////////////////////////////////////////////
+    if (facing_red(p)) {
+        /* Can't move particle to a red border, so we do a 180 and position
+        remains the same as before */
+        switch (p.theta) {
+        case NORTH:
+            p.theta = SOUTH;
+            break;
+        case EAST:
+            p.theta = WEST;
+            break;
+        case SOUTH:
+            p.theta = NORTH;
+            break;
+        case WEST:
+            p.theta = EAST;
+            break;
+        }
+    }
+    else {
+        /* Robot has room to move forward so we increment/decrement the
+        appropriate coordinate by 1 */
+        switch (p.theta) {
+        case NORTH:
+            p.y -= 1;
+            break;
+        case EAST:
+            p.x += 1;
+            break;
+        case SOUTH:
+            p.y += 1;
+            break;
+        case WEST:
+            p.x -= 1;
+            break;
+        }
+    }
+         return p;
 }
 
 /* This function returns data on interesection surroundings for particles.
@@ -872,51 +918,6 @@ task main(){
 
    fclose(fd); /* file reading finished */
 
-   /* main execution loop for particle filter
-
-      How particle filters work:
-
-      Normally we would have a list of particles initilalized with random
-      coordinates and headings.
-
-      At each iteration of the loop, we move the robot and the particles.
-      Surroundings for both are examined and compared.
-      
-      Particles which have surroundings that seem close to the robots are given
-      larger weights compared to those that don't.
-      
-      We then choose from the particles in a way that the particles with higher
-      weights are likley to remain, while particles with smaller weights are
-      eliminated. This is called resampling.
-      
-      After several iterations, we would have a group of particles which is
-      very likley to represent the robot's actual position.
-      
-      How this implementation works:
-      
-      We have simplified the large possibility of coordinates to a grid.
-      
-      === Particle List ===
-      For each intersection on the grid map, we have four particles.
-      One for each of north, east, south, and west, which the robot could be
-      facing since it will move vertically and horizontally.
-      These are all the possible starting positions and headings the robot could
-      have.
-      
-      === Updating weights ===
-      Each iteration we reasign the particle weights.
-      We move the robot, and also the particles.
-      The surroundings, being the four coloured squares around the intersection
-      are checked. The robot's and particles surroundings are compared and the
-      weights are changed based on whether they match or not.
-      
-      === Resampling ==
-      Take note that we do NOT do resampling in this implementation.
-      Instead we have a probability threshold that a particle must pass to be
-      accepted as the actual position of the robot.
-      
-   */
-   
    ////////////////////////////////////////////////////////////////////////////
    // TO DO:
    //
@@ -968,6 +969,9 @@ task main(){
     */
 
         // TODO : keep moving straight; randomize direction; or go in large circle?
+
+        
+        //change_direction(1000 +Random(4), 1000 +Random(4)){ //Turns it Randomly
         move_robot();
         if (RED == g_lastColor)
         {
@@ -1028,8 +1032,8 @@ task main(){
                     misses++;
                 }
 
-                // TODO : Calculate prob, what value for the defines?? Is this correct?
-                list[i].prob = list[i].prob * (hits * MATCH) + (misses * MISMATCH);                
+                //Prob = prob * MATCH^hits * MISMATCH^miss
+                list[i].prob = list[i].prob * pow(MATCH,hits) * pow(MISMATCH,hits);                
             }
 
             // All particles updated... normalize prob and find current best
@@ -1050,24 +1054,55 @@ task main(){
                 }
             }
 
-            // TODO : not exactly sure about this w.r.t maxprob vs robp..?? 
-            if (maxprob > robp)
-            {
-                robp = maxprob;
-                guess[0] = list[best_particle].x;
-                guess[1] = list[best_particle].y;
-                guess[2] = list[best_particle].theta;
-            }
+            //Set our robot best guess to the best particle
+            robp = maxprob;
+            guess[0] = list[best_particle].x;
+            guess[1] = list[best_particle].y;
+            guess[2] = list[best_particle].theta;
         }
         else
         {
             //error
         }
 
+        // //Here we are lost so reset everything and try again
+        // if (tries >= RESETTHRESHOLD)
+        // {
+        //     /*Reset Particle List*/
+        //    for (i = 0; i < GWIDTH*GHEIGHT*4;i = i + 4){
+        //        list[i].x=(i/4)%GWIDTH;
+        //        list[i].y=i/(4*GWIDTH);
+        //        list[i].theta = NORTH;
+        //        list[i].prob = 1.0/(GWIDTH*GHEIGHT*4);
+        //        list[i+1].x=(i/4)%GWIDTH;
+        //        list[i+1].y=i/(4*GWIDTH);
+        //        list[i+1].theta = SOUTH;
+        //        list[i+1].prob = 1.0/(GWIDTH*GHEIGHT*4);
+        //        list[i+2].x=(i/4)%GWIDTH;
+        //        list[i+2].y=i/(4*GWIDTH);
+        //        list[i+2].theta = EAST;
+        //        list[i+2].prob = 1.0/(GWIDTH*GHEIGHT*4);
+        //        list[i+3].x=(i/4)%GWIDTH;
+        //        list[i+3].y=i/(4*GWIDTH);
+        //        list[i+3].theta = WEST;
+        //        list[i+3].prob = 1.0/(GWIDTH*GHEIGHT*4);
+        //    }
 
+        //     robp = 0;
+        //     guess[0] = 0;
+        //     guess[1] = 0;
+        //     guess[2] = 0;
+        // }
 
     }
     PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
+
+    //Print TEST CHECK IF WE KNOW WHERE WE ARE
+    NumOut(0, LCD_LINE1, guess[0]); // x coord
+    NumOut(0, LCD_LINE2, guess[1]); // y coord
+    NumOut(0, LCD_LINE3, guess[2]); // heading
+
+    Wait(5000);
 
     /* When we are fairly confident about the robot's position, we can move on
     to the task given.
@@ -1083,4 +1118,3 @@ task main(){
     move_to(target, dest,guess[2]);
     PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
 }
-
