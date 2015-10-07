@@ -171,6 +171,7 @@ void locateRoadMiddle()
     long startTime, turnTime;
     
     Off(MOTORS);
+    Wait(400);
     // Check if sensor is currently on black or not
     // If on black, move to just outside edge of black
     if (readColor(NUMREAD) == BLACK)
@@ -197,7 +198,7 @@ void locateRoadMiddle()
     // Now move to middle of the width base on timestamp
     turnRight();
     until (readColor(10) == BLACK);
-    Wait(turnTime * 0.5); // would be 0.5, but use .75 due to motors uneven power in turns
+    Wait(turnTime * 0.35); // would be 0.5, but use .35 due to motors uneven power in turns
     Off(MOTORS);
 
     ClearScreen();
@@ -208,6 +209,7 @@ void turn90(bool isLeft)
 {
     //TODO : This needs fixes.... skipping black too often
     locateRoadMiddle();
+    Wait(400);
 
     bool done = false;
     Off(MOTORS); 
@@ -227,20 +229,20 @@ void turn90(bool isLeft)
     while (!done)
     {
         while(BLACK == readColor(NUMREADLESS)) {}
-
-        //Wait(20); // so it's reading a slightly different spot
-        if ( BLACK == readColor(NUMREADLESS))
+        Wait(100); // so it's reading a slightly different spot
+        if ( BLACK != readColor(NUMREADLESS))
         {
             done = true;    
         }
     }
 
+    done = false;
+
     // Then, spin til it's black, and double check color
     while (!done)
     {
         while(BLACK != readColor(NUMREADLESS)) {}
-
-        //Wait(20); // so it's reading a slightly different spot
+        Wait(100); // so it's reading a slightly different spot
         if ( BLACK == readColor(NUMREADLESS))
         {
             done = true;    
@@ -248,9 +250,10 @@ void turn90(bool isLeft)
     }
 
     ClearScreen();
+    Off(MOTORS);
 
     locateRoadMiddle();
-    Off(MOTORS);
+
 }
 
 inline void forwardFullSpeed() 
@@ -290,9 +293,9 @@ void turn180onRed()
     }
 
     ClearScreen();
+    Off(MOTORS);
 
     locateRoadMiddle();
-    Off(MOTORS);
 }
 
 // Print error msg on screen and quit program
@@ -352,9 +355,12 @@ void stayOnBlack()
             // Need to back up a bit but need to make sure after all these
             // turning/checking, the robot direction is still close to when it
             // first started this function (ie need make left & right turns even).
-            reportError("ERROR: +100 degrees tested");
+            // Should just restart whole run perhaps...
+
+            //reportError("ERROR: +100 degrees tested");
         }
     }
+    Off(MOTORS);
 
     locateRoadMiddle();
     ClearScreen();
@@ -395,8 +401,9 @@ sub move_robot(){
 
     int colorOutput;
     int colorCheck;
-    forwardFullSpeed();
     bool isBoundary = false;
+
+    forwardFullSpeed();
 
     while (!isBoundary)
     {
@@ -438,10 +445,19 @@ sub move_robot(){
         }
         else if (YELLOW == colorOutput) // yellow is intersection
         {
-            PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
+            PlayToneEx((colorOutput + 1) * 100,400,2,FALSE);
             g_lastColor = YELLOW;
             isBoundary = true;
-            Wait(500);
+            Wait(400);
+            // Adjust forward so sensor is on road ahead of yellow block
+            RotateMotorEx(OUT_AC, SLOWSPEED, CENTER_DISTANCE, 0, true, true);
+            Wait(400);
+            // If robot enter yellow at an angle, sensor after adjusting forward may not be on black
+            if (readColor(100) != BLACK)
+            {
+                stayOnBlack();
+                Wait(400);
+            }
             //scan_surroundings();
             // After scanning intersection, need to move out of yellow first
             //forwardFullSpeed();
@@ -450,6 +466,7 @@ sub move_robot(){
         {
             //PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
             stayOnBlack();
+            Wait(400);
             forwardFullSpeed();
         }
         else
@@ -477,21 +494,13 @@ intersection scan_surroundings(){
     //
     ////////////////////////////////////////////////////////////////////////////
     ClearScreen();
-    int curr_color;
-    
-    // Adjust sensor forward so wheels align with intersection, after this sensor should be over black
-    if(readColor(100) == YELLOW) {
-         RotateMotorEx(OUT_AC, SLOWSPEED, CENTER_DISTANCE, 0, true, true);
-    }
-    else
-    {   // This function should be called when we already reached yellow intersection
-        reportError("ERR:Scan Not Yellow");
-    }
+    int curr_color;    
 
-    // If robot enter yellow at an angle, sencor after previous adjustment may not be on black
+    // If robot enter yellow at an angle, sensor after forward adjustment may not be on black
     if (readColor(100) != BLACK)
     {
         stayOnBlack();
+        Wait(400);
     }
 
     // TODO : make sure turning direction is correct: NE->SE->SW->NW
@@ -519,14 +528,14 @@ intersection scan_surroundings(){
         }
     }
 
+    Off(MOTORS);
+
     rsense.NE = corners[0];
     rsense.SE = corners[1];
     rsense.SW = corners[2];
     rsense.NW = corners[3];
 
     locateRoadMiddle();
-
-    Off(MOTORS);
     Wait(4000);
 
     ClearScreen();
