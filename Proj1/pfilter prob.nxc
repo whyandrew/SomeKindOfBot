@@ -371,6 +371,20 @@ void stayOnBlack()
     ClearScreen();
 }
 
+//Return true iff the particle is directly facing a red border.
+bool facing_red(particle p) {
+
+    ///////////////////////////////////////////////////////////////////
+    // Return true iff the particle is directly facing a red border. //
+    ///////////////////////////////////////////////////////////////////
+
+    return ((p.x == 0             && p.theta == WEST)  ||
+            (p.x == (GWIDTH - 1)  && p.theta == EAST)  ||
+            (p.y == 0             && p.theta == NORTH) ||
+            (p.y == (GHEIGHT - 1) && p.theta == SOUTH));
+}
+
+
 /* Subroutine which moves the robot forward from one intersection to the next
 */
 sub move_robot(){
@@ -668,39 +682,40 @@ particle move(particle p){
         /* Can't move particle to a red border, so we do a 180 and position
         remains the same as before */
         switch (p.theta) {
-        case NORTH:
-            p.theta = SOUTH;
-            break;
-        case EAST:
-            p.theta = WEST;
-            break;
-        case SOUTH:
-            p.theta = NORTH;
-            break;
-        case WEST:
-            p.theta = EAST;
-            break;
+            case NORTH:
+                p.theta = SOUTH;
+                break;
+            case EAST:
+                p.theta = WEST;
+                break;
+            case SOUTH:
+                p.theta = NORTH;
+                break;
+            case WEST:
+                p.theta = EAST;
+                break;
         }
     }
     else {
         /* Robot has room to move forward so we increment/decrement the
         appropriate coordinate by 1 */
         switch (p.theta) {
-        case NORTH:
-            p.y -= 1;
-            break;
-        case EAST:
-            p.x += 1;
-            break;
-        case SOUTH:
-            p.y += 1;
-            break;
-        case WEST:
-            p.x -= 1;
-            break;
+            case NORTH:
+                p.y -= 1;
+                break;
+            case EAST:
+                p.x += 1;
+                break;
+            case SOUTH:
+                p.y += 1;
+                break;
+            case WEST:
+                p.x -= 1;
+                break;
         }
     }
-         return p;
+
+    return p;
 }
 
 /* This function returns data on interesection surroundings for particles.
@@ -796,18 +811,6 @@ int sense(intersection map[], int x, int y, int dir, int heading){
     }
 
     return color; 
-}
-
-bool facing_red(particle p) {
-
-    ///////////////////////////////////////////////////////////////////
-    // Return true iff the particle is directly facing a red border. //
-    ///////////////////////////////////////////////////////////////////
-
-    return ((p.x == 0             && p.theta == WEST)  ||
-            (p.x == (GWIDTH - 1)  && p.theta == EAST)  ||
-            (p.y == 0             && p.theta == NORTH) ||
-            (p.y == (GHEIGHT - 1) && p.theta == SOUTH));
 }
 
 /* The main task which initializes data
