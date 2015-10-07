@@ -295,22 +295,6 @@ void turn180onRed()
     Off(MOTORS);
 }
 
-// TODO: changing this to use onFwdSync and time
-inline void turnByDegrees(bool left, int degrees)
-{
-    // Left turn with RotateMotorEx is faster than right turn with same settings
-    // Compensate by reducing left turn "degrees" by 20%
-    if (left)
-    {
-        //degrees = (degrees * 4) / 5 ;
-        RotateMotorEx(OUT_AC, FULLSPEED, degrees, -100, true, true);
-    }
-    else // turn right
-    {
-        RotateMotorEx(OUT_AC, FULLSPEED, degrees, 100, true, true);
-    }
-}
-
 // Print error msg on screen and quit program
 inline void reportError(string msg)
 {
@@ -326,20 +310,23 @@ inline void reportError(string msg)
 */
 void stayOnBlack()
 {
-    int factor = 1;
+    int f = 1; //multiplicative factor for turning time
+    int t = 100; // starting turning time in ms
+    int pre = 0; // 
     // always try left side first, true == left
-    bool whichSide = true; 
     bool isDone = false;
 
     TextOut(0, LCD_LINE2, "Off road....");
 
     while (!isDone)
     {
-        NumOut(0, LCD_LINE3, 5 * factor);
+        NumOut(0, LCD_LINE3, t*f);
 
-        // try left side
-        turnByDegrees(whichSide, DEGREE05 * factor);
-        Wait(250);
+        // try left side first
+        Wait(500);
+        turnLeft()
+        Wait((t*f) + pre);
+        Off(MOTORS);
 
         if (readColor(50) == BLACK)
         {
@@ -347,15 +334,17 @@ void stayOnBlack()
         }
         else
         {   // Left doesn't hit black, try right side
-            // TODO : left and right turns are not even, may need to fudge the number a bit...
-            turnByDegrees(!whichSide, DEGREE05 * factor * 3 / 2);
-            Wait(250);
+            Wait(500);            
+            turnRight();
+            Wait(f*t * 2);
+            Off(MOTORS);
             if (readColor(50) == BLACK)
             {
                 isDone = true;
             }
+            pre = f*t;
         }
-        factor += 1;
+        factor++;
         if (factor > 20)
         {
             // TODO  : corner case when off black just before hitting red,
