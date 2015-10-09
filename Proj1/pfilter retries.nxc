@@ -23,7 +23,7 @@
 #define GWIDTH 3
 #define GHEIGHT 5
 
-#define RESETTHRESHOLD 100
+#define RESETTHRESHOLD 10
 
 #define THRESHOLD 0.80
 #define MATCH 2 
@@ -1010,7 +1010,7 @@ task main(){
             Wait(500);
             RotateMotorEx(MOTORS, SLOWSPEED, 50, 0, true, true);
             // Rotate all particles by 180 (update probabilities or not?)
-            for (i=0; i < GWIDTH*GHEIGHT; i++){
+            for (i=0; i < GWIDTH*GHEIGHT*4; i++){
                 if (CHECK_RED) {
                     if (facing_red(list[i])) {
                         list[i].prob *= MATCH;
@@ -1019,6 +1019,26 @@ task main(){
                     }
                 }
                 list[i] = reverse(list[i]);
+            }
+
+            // Turn right after hitting red so don't go on same path again
+            Wait(500);
+            turnRight90();
+            for (i=0; i < GWIDTH*GHEIGHT*4; i++){
+                switch (list[i].theta) {
+                    case NORTH:
+                        p.theta = EAST;
+                        break;
+                    case EAST:
+                        p.theta = SOUTH;
+                        break;
+                    case SOUTH:
+                        p.theta = WEST;
+                        break;
+                    case WEST:
+                        p.theta = NORTH;
+                        break;
+                }
             }
 
         }
@@ -1131,34 +1151,35 @@ task main(){
         TextOut(0, LCD_LINE1, "P: 0, 2");
         NumOut(0, LCD_LINE2, list[8]);
         
-        // //Here we are lost so reset everything and try again
-        // if (tries >= RESETTHRESHOLD)
-        // {
-        //     /*Reset Particle List*/
-        //    for (i = 0; i < GWIDTH*GHEIGHT*4;i = i + 4){
-        //        list[i].x=(i/4)%GWIDTH;
-        //        list[i].y=i/(4*GWIDTH);
-        //        list[i].theta = NORTH;
-        //        list[i].prob = 1.0/(GWIDTH*GHEIGHT*4);
-        //        list[i+1].x=(i/4)%GWIDTH;
-        //        list[i+1].y=i/(4*GWIDTH);
-        //        list[i+1].theta = SOUTH;
-        //        list[i+1].prob = 1.0/(GWIDTH*GHEIGHT*4);
-        //        list[i+2].x=(i/4)%GWIDTH;
-        //        list[i+2].y=i/(4*GWIDTH);
-        //        list[i+2].theta = EAST;
-        //        list[i+2].prob = 1.0/(GWIDTH*GHEIGHT*4);
-        //        list[i+3].x=(i/4)%GWIDTH;
-        //        list[i+3].y=i/(4*GWIDTH);
-        //        list[i+3].theta = WEST;
-        //        list[i+3].prob = 1.0/(GWIDTH*GHEIGHT*4);
-        //    }
+        //Here we are lost so reset everything and try again
+        if (tries >= RESETTHRESHOLD)
+        {
+            /*Reset Particle List*/
+           for (i = 0; i < GWIDTH*GHEIGHT*4;i = i + 4){
+               list[i].x=(i/4)%GWIDTH;
+               list[i].y=i/(4*GWIDTH);
+               list[i].theta = NORTH;
+               list[i].prob = 1.0/(GWIDTH*GHEIGHT*4);
+               list[i+1].x=(i/4)%GWIDTH;
+               list[i+1].y=i/(4*GWIDTH);
+               list[i+1].theta = SOUTH;
+               list[i+1].prob = 1.0/(GWIDTH*GHEIGHT*4);
+               list[i+2].x=(i/4)%GWIDTH;
+               list[i+2].y=i/(4*GWIDTH);
+               list[i+2].theta = EAST;
+               list[i+2].prob = 1.0/(GWIDTH*GHEIGHT*4);
+               list[i+3].x=(i/4)%GWIDTH;
+               list[i+3].y=i/(4*GWIDTH);
+               list[i+3].theta = WEST;
+               list[i+3].prob = 1.0/(GWIDTH*GHEIGHT*4);
+           }
 
-        //     robp = 0.0;
-        //     guess[0] = 0;
-        //     guess[1] = 0;
-        //     guess[2] = 0;
-        // }
+            tries = 0;
+            robp = 0.0;
+            guess[0] = 0;
+            guess[1] = 0;
+            guess[2] = 0;
+        }
 
     }
     PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
