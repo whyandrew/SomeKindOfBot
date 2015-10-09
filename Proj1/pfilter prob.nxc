@@ -25,9 +25,12 @@
 
 #define RESETTHRESHOLD 100
 
-#define THRESHOLD 0.90
+#define THRESHOLD 0.80
 #define MATCH 2 
 #define MISMATCH 0.5
+
+// Use red borders or lack thereof to update probablilities
+#define CHECK_RED false
 
 /* You may want to define macros to keep track of certain turning angles and
    speeds throughout your code. This provides an easy way to change them */
@@ -110,7 +113,12 @@ string colors[] = {
     "Color 8?",
     "Color 9?"
 };
-
+string direction_names[] = {
+    "North",
+    "East",
+    "South",
+    "West"
+};
 int lines[] = {
     LCD_LINE1,
     LCD_LINE2,
@@ -422,6 +430,7 @@ sub move_robot(){
             TextOut(0, LCD_LINE6, colors[colorOutput]);
             colorOutput = colorCheck;
             Wait(2000);
+            Wait(500);
             ClearScreen();
         }
         else
@@ -536,7 +545,7 @@ intersection scan_surroundings(){
     rsense.NW = corners[3];
 
     locateRoadMiddle();
-    Wait(4000);
+    Wait(2000);
 
     ClearScreen();
     return rsense;
@@ -555,24 +564,31 @@ sub change_direction(int orig, int new){
     // Implement each of the turns specified below.
     //
     ////////////////////////////////////////////////////////////////////////////
-
+    ClearScreen();
+    TextOut(0, LCD_LINE5, "Change Direciton heading");
+    NumOut(30, LCD_LINE1, new);
+    NumOut(30, LCD_LINE2, orig);
     int change = new - orig;
     /* selects the appropriate turn based on the headings given*/
-    switch (change % 4){
+    switch (change){
            case 3:
+           case -1:
                 //turn left 90 degrees
                 turnLeft90();
                 break;
            case 1:
+           case -3:
                 //turn right 90 degrees
                 turnRight90();
                 break;
            case 2:
+           case -2:
                 // 180 degree turn (2*90)
                 turnRight90();
                 turnRight90();
                 break;
     }
+
 }
 
 
@@ -595,11 +611,13 @@ int move_to(int s, int f, int h){
     sy = s%GHEIGHT;
     fx = f/GHEIGHT;
     fy = f%GHEIGHT;
-    
+
     /* calculate how far to go in manhatten distances */
     tx = fx - sx;
     ty = fy - sy;
     heading = h;
+
+    int i; // Loop variable
 
     ///////////////////////////////////////////////////////////////////////////
     // TO DO:
@@ -610,51 +628,99 @@ int move_to(int s, int f, int h){
     //
     ////////////////////////////////////////////////////////////////////////////
 
-    // Move along x axis first  (if needed)
 
-    if (tx < 0) {
+    ClearScreen();
+    TextOut(0, LCD_LINE1, "t Coord");
+    NumOut(0, LCD_LINE2, tx);
+    NumOut(30, LCD_LINE2, ty);
+    TextOut(0, LCD_LINE3, "Initial heading");
+    TextOut(0, LCD_LINE4, direction_names[h-100]);
+    Wait(3000);
+
+    // Move along x axis first  (if needed)
+    if (tx > 0) {
+        TextOut(0, LCD_LINE2, "Heading east");
         // Turn robot EAST
         change_direction(heading, EAST);
         // Update heading
         heading = EAST;
         // Move forward (tx) times
-        repeat (-tx) {
+        for(i=0; i<abs(tx); i++) {
+            ClearScreen();
+            NumOut(0, LCD_LINE5, i);
+            Wait(1000);
+
             move_robot();
         }
 
-    } else if (tx > 0) {
+    } else if (tx < 0) {
+        TextOut(0, LCD_LINE2, "Heading west");
         // Turn robot WEST
         change_direction(heading, WEST);
         // Update heading
         heading = WEST;
         // Move forward (tx) times
-        repeat (tx) {
+        for(i=0; i<abs(tx); i++) {
+            ClearScreen();
+            NumOut(0, LCD_LINE5, i);
+            Wait(1000);
             move_robot();
         }
     }
 
     // Now move along y axis (if needed)
     if (ty < 0) {
+        TextOut(0, LCD_LINE2, "Heading north");
         // Turn robot NORTH
         change_direction(heading, NORTH);
         // Update heading
         heading = NORTH;
         // Move forward (-ty) times
-        repeat (-ty) {
+        for(i=0; i<abs(ty); i++) {
+            ClearScreen();
+            NumOut(0, LCD_LINE5, i);
+            Wait(1000);
             move_robot();
         }
     } else if (ty > 0) {
+        TextOut(0, LCD_LINE2, "Heading south");
         // Turn robot SOUTH
         change_direction(heading, SOUTH);
         // Update heading
         heading = SOUTH;
         // Move forward (ty) times
-        repeat (ty) {
+        for(i=0; i<abs(ty); i++) {
+            ClearScreen();
+            NumOut(0, LCD_LINE5, i);
+            Wait(1000);
             move_robot();
         }
     }
     return heading;
 }
+
+/* Turn the particle 180 degrees and return it.
+*/
+
+
+particle reverse(particle p) {
+     switch (p.theta) {
+            case NORTH:
+                p.theta = SOUTH;
+                break;
+            case EAST:
+                p.theta = WEST;
+                break;
+            case SOUTH:
+                p.theta = NORTH;
+                break;
+            case WEST:
+                p.theta = EAST;
+                break;
+     }
+     return p;
+}
+
 
 /* This function takes a particle and returns an updated particle after moving
 
@@ -820,7 +886,7 @@ task main(){
      intersection map [GWIDTH *GHEIGHT]; /* holds map data */
      
      int guess[3]; /* holds x y and theta of the best guess at robot's position */
-     float robp = 0; /* holds the prob that the robot is at guess */
+     float robp = 0.0; /* holds the prob that the robot is at guess */
      intersection rsense; /* holds data about the robot's surroundings */
 
      particle list[GWIDTH*GHEIGHT*4]; /* list of particles */
@@ -940,34 +1006,9 @@ task main(){
 
 
     // TODO .... start the robot moving to the red boarder/corner first??
-
+    //robp = 1.0;
     while (robp < THRESHOLD){ /* run the update loop until an acceptable
                              probability is obtained */
-    /* implement me */
-
-    /*
-    while robp < threshold 
-    {
-        - move_robot() 
-            //hit red boundary 
-            - turn180() robots
-                - ?? turn180 for all particles?     
-            - return when hit intersection
-
-            //if hit intersection
-        - scan_surroundings() 
-            - return robot-intersection
-
-        - for each particle, move(particle) => updated-particle // move p forward by 1
-            - for each dir, sense() and calculate robot-intersection-dir match/mistach
-                - update particle.prob
-        
-        - normalize prob,
-        - robp = highest particle.prob
-
-        // TODO : loop counter? when do we decide better to re-init all particles?
-    }
-    */
 
         // TODO : keep moving straight; randomize direction; or go in large circle?
 
@@ -979,7 +1020,18 @@ task main(){
             turn180onRed();
             Wait(500);
             RotateMotorEx(MOTORS, SLOWSPEED, 50, 0, true, true);
-            // TODO: need to turn180 for all particles?
+            // Rotate all particles by 180 (update probabilities or not?)
+            for (i=0; i < GWIDTH*GHEIGHT; i++){
+                if (CHECK_RED) {
+                    if (facing_red(list[i])) {
+                        list[i].prob *= MATCH;
+                    } else {
+                        list[i].prob *= MISMATCH;
+                    }
+                }
+                list[i] = reverse(list[i]);
+            }
+
         }
         else if (YELLOW == g_lastColor)
         {
@@ -988,6 +1040,13 @@ task main(){
             // update particles: move, then sense & calculate prob
             for (i = 0; i < listSize; i++)
             {
+                if (CHECK_RED) {
+                    if (!facing_red(list[i])) {
+                        list[i].prob *= MATCH;
+                    } else {
+                        list[i].prob *= MISMATCH;
+                    }
+                }
                 list[i] = move(list[i]);
                 hits = 0;
                 misses = 0;
@@ -1032,43 +1091,58 @@ task main(){
                 {
                     misses++;
                 }
-
-                //Prob = prob * MATCH^hits * MISMATCH^miss
-                //*************************************
-                // TODO : no def for POW???
-                //*************************************
-                //list[i].prob = list[i].prob * pow(MATCH,hits) * pow(MISMATCH,misses);
-            }
-
-            // All particles updated... normalize prob and find current best
-
-            /* Renormalization step*/
-            totalprob = 0;
-            maxprob = 0;
-            for (i = 0; i < listSize; i++) {
-                totalprob += list[i].prob;
-            }
-
-            for (i = 0; i < listSize; i++) {
-                list[i].prob /= totalprob;
-                if (list[i].prob > maxprob)
+                for(; hits >0; hits--)
                 {
-                    maxprob = list[i].prob;
-                    best_particle = i;
+                    list[i].prob *= MATCH;
+                }
+
+                for (; misses > 0; misses--)
+                {
+                    list[i].prob *= MISMATCH;
                 }
             }
 
-            //Set our robot best guess to the best particle
-            robp = maxprob;
-            guess[0] = list[best_particle].x;
-            guess[1] = list[best_particle].y;
-            guess[2] = list[best_particle].theta;
-        }
+
+                    }
         else
         {
             //error
         }
+        // All particles updated... normalize prob and find current best
 
+        /* Renormalization step*/
+        totalprob = 0.0;
+        maxprob = 0.0;
+        for (i = 0; i < listSize; i++) {
+            totalprob += list[i].prob;
+        }
+
+        for (i = 0; i < listSize; i++) {
+        list[i].prob /= totalprob;
+        if (list[i].prob > maxprob)
+           {
+               maxprob = list[i].prob;
+               best_particle = i;
+           }
+        }
+        //Set our robot best guess to the best particle
+        robp = maxprob;
+        guess[0] = list[best_particle].x;
+        guess[1] = list[best_particle].y;
+        guess[2] = list[best_particle].theta;
+
+        ClearScreen();
+        // Current best guess at location/heading
+        NumOut(0, LCD_LINE1, guess[0]); // x coord
+        NumOut(0, LCD_LINE2, guess[1]); // y coord
+        TextOut(0, LCD_LINE3, direction_names[guess[2] - 100]); // heading
+        TextOut(30, LCD_LINE4, NumToStr(maxprob*100.0) + "%");
+
+        Wait(2000);
+        ClearScreen();
+        TextOut(0, LCD_LINE1, "P: 0, 2");
+        NumOut(0, LCD_LINE2, list[8]);
+        
         // //Here we are lost so reset everything and try again
         // if (tries >= RESETTHRESHOLD)
         // {
@@ -1092,7 +1166,7 @@ task main(){
         //        list[i+3].prob = 1.0/(GWIDTH*GHEIGHT*4);
         //    }
 
-        //     robp = 0;
+        //     robp = 0.0;
         //     guess[0] = 0;
         //     guess[1] = 0;
         //     guess[2] = 0;
@@ -1100,11 +1174,15 @@ task main(){
 
     }
     PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
+    //guess[0] = 2;
+    //guess[1] = 4;
+    //guess[2] = SOUTH;
 
     //Print TEST CHECK IF WE KNOW WHERE WE ARE
     NumOut(0, LCD_LINE1, guess[0]); // x coord
     NumOut(0, LCD_LINE2, guess[1]); // y coord
     NumOut(0, LCD_LINE3, guess[2]); // heading
+    TextOut(0, LCD_LINE4, "Localized!");
 
     Wait(5000);
 
