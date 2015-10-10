@@ -23,7 +23,8 @@
 #define GWIDTH 3
 #define GHEIGHT 5
 
-#define RESETTHRESHOLD 100
+#define RESETTHRESHOLD 6
+#define ENABLE_AUDIO true
 
 #define THRESHOLD 0.80
 #define MATCH 2 
@@ -31,6 +32,9 @@
 
 // Use red borders or lack thereof to update probablilities
 #define CHECK_RED false
+
+// Turn right after hitting a red border and doing a 180
+#define TURN_RIGHT_AFTER_RED false
 
 /* You may want to define macros to keep track of certain turning angles and
    speeds throughout your code. This provides an easy way to change them */
@@ -47,7 +51,15 @@
 #define MOTORS OUT_AC
 
 #define FULLSPEED   30
+#define FULLSPEED_C FULLSPEED-5 // Motor OUT_C is stronger than A, reduce power to compensate
 #define SLOWSPEED   30
+#define SLOWSPEED_C SLOWSPEED-5
+
+// Amount of motor sync-rotation to turn robot
+#define DEGREE360 1040
+#define DEGREE180 520
+#define DEGREE90  260
+#define DEGREE05  15
 
 // Distance to be adjusted after sensor detects yellow intersection
 // Use with FULLSPEED
@@ -57,6 +69,8 @@
 #define NUMREAD 400
 #define NUMREADLESS 200
 
+// True if still at localization, false if moving to target
+bool isLocalizing;
 // Save color info when the robo stops during localization step
 int g_lastColor;
 
@@ -431,7 +445,7 @@ sub move_robot(){
 
         if (RED == colorOutput) // Hit red wall, do 180 turn
         {
-            PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
+              if (ENABLE_AUDIO) PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
             g_lastColor = RED;
             isBoundary = true;
             // Adjust forward so sensor is in middle of red before turning 180
@@ -443,7 +457,7 @@ sub move_robot(){
         }
         else if (YELLOW == colorOutput) // yellow is intersection
         {
-            PlayToneEx((colorOutput + 1) * 100,400,2,FALSE);
+              if (ENABLE_AUDIO) PlayToneEx((colorOutput + 1) * 100,400,2,FALSE);
             g_lastColor = YELLOW;
             isBoundary = true;
             Wait(400);
@@ -462,7 +476,7 @@ sub move_robot(){
         }        
         else if (BLACK != colorOutput) // moving out of black road, get back.
         {
-            //PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
+            //  if (ENABLE_AUDIO) PlayToneEx((colorOutput + 1) * 100,400,1,FALSE);
             stayOnBlack();
             Wait(400);
             forwardFullSpeed();
@@ -511,7 +525,7 @@ intersection scan_surroundings(){
         until((curr_color = readColor(NUMREAD)) != BLACK);
         //Wait(50); // do another read in slight differnt spot, in case previous read was on color boundary
         corners[i] = readColor(NUMREADLESS);
-        PlayToneEx((corners[i] + 1) * 100,400,4,FALSE);
+          if (ENABLE_AUDIO) PlayToneEx((corners[i] + 1) * 100,400,4,FALSE);
         TextOut(0, lines[i], colors[corners[i]]);
         // wait til black to record next corner
         while (!done)
@@ -885,6 +899,7 @@ task main(){
      int hits, misses; /* keeps track of how many of a particle's
                           surroundings match the robot's */
      float maxprob, totalprob;
+     int tries = 0; // Iterations of main loop before giving up and resetting
      
      byte fd, charat;         /* variables for file descriptors and characters */
      string line;
@@ -1010,7 +1025,7 @@ task main(){
             Wait(500);
             RotateMotorEx(MOTORS, SLOWSPEED, 50, 0, true, true);
             // Rotate all particles by 180 (update probabilities or not?)
-            for (i=0; i < GWIDTH*GHEIGHT*4; i++){
+            for (i=0; i < listSize; i++){
                 if (CHECK_RED) {
                     if (facing_red(list[i])) {
                         list[i].prob *= MATCH;
@@ -1019,6 +1034,14 @@ task main(){
                     }
                 }
                 list[i] = reverse(list[i]);
+
+            }
+            if (TURN_RIGHT_AFTER_RED) {
+                //Turn the robot and particles right 90 degrees
+                turnRight90();
+                for (i=0; i < listSize; i++){
+                    list[i].theta =  100 + (((list[i].theta - 100) + 1) % 4);
+                }
             }
 
         }
@@ -1080,7 +1103,6 @@ task main(){
                 {
                     misses++;
                 }
-                // Adjust probability of particles
                 for(; hits >0; hits--)
                 {
                     list[i].prob *= MATCH;
@@ -1091,7 +1113,9 @@ task main(){
                     list[i].prob *= MISMATCH;
                 }
             }
-        }
+
+
+                    }
         else
         {
             //error
@@ -1131,37 +1155,47 @@ task main(){
         TextOut(0, LCD_LINE1, "P: 0, 2");
         NumOut(0, LCD_LINE2, list[8]);
         
-        // //Here we are lost so reset everything and try again
-        // if (tries >= RESETTHRESHOLD)
-        // {
+         //Here we are lost so reset everything and try again
+        if (tries >= RESETTHRESHOLD)
+        {
+            ClearScreen();
+            TextOut(0, 0, "Too lost... resetting");
+            Wait(3000);
+            ClearScreen();
+            
         //     /*Reset Particle List*/
-        //    for (i = 0; i < GWIDTH*GHEIGHT*4;i = i + 4){
-        //        list[i].x=(i/4)%GWIDTH;
-        //        list[i].y=i/(4*GWIDTH);
-        //        list[i].theta = NORTH;
-        //        list[i].prob = 1.0/(GWIDTH*GHEIGHT*4);
-        //        list[i+1].x=(i/4)%GWIDTH;
-        //        list[i+1].y=i/(4*GWIDTH);
-        //        list[i+1].theta = SOUTH;
-        //        list[i+1].prob = 1.0/(GWIDTH*GHEIGHT*4);
-        //        list[i+2].x=(i/4)%GWIDTH;
-        //        list[i+2].y=i/(4*GWIDTH);
-        //        list[i+2].theta = EAST;
-        //        list[i+2].prob = 1.0/(GWIDTH*GHEIGHT*4);
-        //        list[i+3].x=(i/4)%GWIDTH;
-        //        list[i+3].y=i/(4*GWIDTH);
-        //        list[i+3].theta = WEST;
-        //        list[i+3].prob = 1.0/(GWIDTH*GHEIGHT*4);
-        //    }
+            for (i = 0; i < GWIDTH*GHEIGHT*4;i = i + 4){
+               list[i].x=(i/4)%GWIDTH;
+               list[i].y=i/(4*GWIDTH);
+               list[i].theta = NORTH;
+               list[i].prob = 1.0/(GWIDTH*GHEIGHT*4);
+               list[i+1].x=(i/4)%GWIDTH;
+               list[i+1].y=i/(4*GWIDTH);
+               list[i+1].theta = SOUTH;
+               list[i+1].prob = 1.0/(GWIDTH*GHEIGHT*4);
+               list[i+2].x=(i/4)%GWIDTH;
+               list[i+2].y=i/(4*GWIDTH);
+               list[i+2].theta = EAST;
+               list[i+2].prob = 1.0/(GWIDTH*GHEIGHT*4);
+               list[i+3].x=(i/4)%GWIDTH;
+               list[i+3].y=i/(4*GWIDTH);
+               list[i+3].theta = WEST;
+               list[i+3].prob = 1.0/(GWIDTH*GHEIGHT*4);
+            }
 
-        //     robp = 0.0;
-        //     guess[0] = 0;
-        //     guess[1] = 0;
-        //     guess[2] = 0;
-        // }
+            robp = 0.0;
+            guess[0] = 0;
+            guess[1] = 0;
+            guess[2] = 0;
+            tries = 0;
+        }
+        else
+        {
+            tries++;
+        }
 
     }
-    PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
+      if (ENABLE_AUDIO) PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
     //guess[0] = 2;
     //guess[1] = 4;
     //guess[2] = SOUTH;
@@ -1170,7 +1204,7 @@ task main(){
     NumOut(0, LCD_LINE1, guess[0]); // x coord
     NumOut(0, LCD_LINE2, guess[1]); // y coord
     NumOut(0, LCD_LINE3, guess[2]); // heading
-    TextOut(0, LCD_LINE4, "Localized!");
+    TextOut(0, LCD_LINE4, "Localized in " + NumToStr(tries) + " tries!");
 
     Wait(5000);
 
@@ -1184,7 +1218,7 @@ task main(){
 
     */
     guess[2] = move_to(guess[0]*GHEIGHT + guess[1], target, guess[2]);
-    PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
+      if (ENABLE_AUDIO) PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
     move_to(target, dest,guess[2]);
-    PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
+      if (ENABLE_AUDIO) PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
 }
